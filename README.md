@@ -48,7 +48,7 @@ For best results 'ttt-collect' should be run daily or every N hours. Running it 
 In general, though, your 'ttt-collect' commandline will be:
     `./manage.py ttt-collect --config config.yml --dsn dsn.yml`
     or
-    `./manage.py ttt-collecto -c config.yml -d dsn.yml`
+    `./manage.py ttt-collect -c config.yml -d dsn.yml`
 
 That should be put in a crontab and run as often as you feel like.
 
