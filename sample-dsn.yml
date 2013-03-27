@@ -1,0 +1,18 @@
+servers:
+  localhost:
+    version: ~
+    readfor: live
+    writefor: live
+    active: y
+    ttt: y
+    checksum: y
+
+clusters:
+  live:
+    active: y
+    schemas: ~
+    servers:
+    - localhost
+    primary: localhost
+    failover: localhost
+
