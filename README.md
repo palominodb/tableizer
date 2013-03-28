@@ -14,9 +14,9 @@ Tableizer allows simple collecting and detailed reporting on:
 - Table volume-metrics (tracking table size over time)
 - Table user permission changes (tracking changes on user privs)
 
-TTT has a pluggable system for implementing new metrics which could be used to track other things like "SHOW STATUS".
+Tableizer has a pluggable system for implementing new metrics which could be used to track other things like "SHOW STATUS".
 
-TTT also has a pluggable reporting/querying interface which out of the box support for generating reports suitable for:
+Tableizer also has a pluggable reporting/querying interface which out of the box support for generating reports suitable for:
 - text viewing ( in the moment troubleshooting, see when it went wrong )
 - email ( being kept apprise of developer madness )
 - nagios ( being alerted of developer madness )
@@ -38,12 +38,12 @@ If you're going to use rrdtool, you need to execute this command first.
     
 3. Configure your local_settings.py, config.yml and dsn.yml. An example of a local_settings.py, config.yml, and a dsn.yml are included in the distribution. The local_settings.py file should be placed in the same deirectory as the settings.py
 
-4. You will also need an sql user to do the data collection. It is Highly recommended that you make a user just for ttt, for both security and accountability purposes. TTT needs 'select', and 'show view' priviliges. The below query give the 'ttt' user the appropriate permissions.
+4. You will also need an sql user to do the data collection. It is Highly recommended that you make a user just for tableizer, for both security and accountability purposes. Tableizer needs 'select', and 'show view' priviliges. The below query give the 'tableizer' user the appropriate permissions.
 
-   `GRANT SELECT, SHOW VIEW ON *.* TO 'ttt'@'ops.example.com' IDENTIFIED BY 'password'`
+   `GRANT SELECT, SHOW VIEW ON *.* TO 'tableizer'@'ops.example.com' IDENTIFIED BY 'password'`
    
 ### Examples
-For best results 'ttt-collect' should be run daily or every N hours. Running it or 'ttt-query' with '--help', or '-h', will show usage information.
+For best results 'ttt-collect' should be run daily or every N hours. Running it or 'ttt-query' with '--help', or '-h', will show usage information. Available stats are 'definition', 'volume', 'user' and 'view.'
 
 In general, though, your 'ttt-collect' commandline will be:
     `./manage.py ttt-collect --config config.yml --dsn dsn.yml`
@@ -52,8 +52,15 @@ In general, though, your 'ttt-collect' commandline will be:
 
 That should be put in a crontab and run as often as you feel like.
 
+For ttt-query, the available output modes are:
+
+- text
+- nagios
+- rrd
+- email
+
 To be emailed of any table changes that happen:
-    `./manage.py ttt-query --config config.yml --stat definition --since last`
+    `./manage.py ttt-query --config config.yml --stat definition --since last -o email`
 
 The report generated shows you what happened with the most recent 'version'  of each table. The output is: "compare the most recent entry with the previous". For table definitions, only changes are stored, so, if a new table was created and then never altered, it will always show up as 'new' in that query.
 
@@ -63,7 +70,7 @@ It's a useful display, but often it's better to use --since to prune any changes
 Which will only show 'new' tables in the 4 hour window that they showed up in.
 
 Volumetrics are collected every time, regardless of changes. This is to support export to rrd and other tools.
-    `./manage.py ttt-query --config config.yml --stat volume --order 'data_length,-index_length' --limit 50`
+    `./manage.py ttt-query --config config.yml --stat volume --order 'data_length,-index_length' --limit 50 -o rrd`
     
 This will show you the top 50 tables ordered by size after doing 'ignore tables' handling. To report on all tables add '--raw' to the commandline.
     
