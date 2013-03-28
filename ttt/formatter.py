@@ -32,14 +32,14 @@ class Formatter:
                 do_rej = False
                 if cfg.get('report_ignore', {}).get(r.collector) is not None:
                     for reg in cfg.get('report_ignore', {}).get(r.collector, []):
-                        re_match = re.match(reg, server_schema_table)
+                        re_match = re.search(reg, server_schema_table)
                         if re_match is not None:
                             do_rej = True
                             break
                 if not do_rej:
                     if cfg.get('report_ignore', {}).get('global') is not None:
                         for reg in cfg.get('report_ignore', {}).get('global', []):
-                            re_match = re.match(reg, server_schema_table)
+                            re_match = re.search(reg, server_schema_table)
                             if re_match is not None:
                                 do_rej = True
                                 break
