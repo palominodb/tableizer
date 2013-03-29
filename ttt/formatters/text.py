@@ -8,13 +8,8 @@ class TextFormatter(Formatter):
         stream = self.stream
         run_time = None
         options['display_width'] = 80 if options.get('display_width') is None else options.get('display_width')
-        real_rows = []
-        if options.get('raw'):
-            real_rows = rows
-        else:
-            real_rows = self.reject_ignores(rows)
             
-        for row in real_rows:
+        for row in rows:
             if row.run_time != run_time:
                 if run_time is not None:
                     stream.write('')

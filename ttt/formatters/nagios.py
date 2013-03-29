@@ -34,15 +34,9 @@ class NagiosFormatter(Formatter):
             alert_level = self.WARNING
             
         tables = cfg.get('formatter_options', {}).get('nagios', {}).get('tables') if cfg.get('formatter_options', {}).get('nagios', {}).get('tables') else []
-        real_rows = []
         output_str = ''
-        
-        if options.get('raw'):
-            real_rows = rows
-        else:
-            real_rows = self.reject_ignores(rows)
             
-        for row in real_rows:
+        for row in rows:
             if row.__class__.objects.status(row) in ['changed', 'new', 'deleted', 'unreachable']:
                 sst = '.'.join([row.server, row.database_name, row.table_name])
                 row_alert = False

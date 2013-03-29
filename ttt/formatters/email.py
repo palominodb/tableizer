@@ -13,7 +13,7 @@ class EmailFormatter(Formatter):
         if link_type == 'true':
             link_url = self.need_option('gui_url')
         last_run = None
-        for r in self.reject_ignores(rows):
+        for r in rows:
             if last_run != r.run_time:
                 stream.write('--- %s\n' % (str(r.run_time)))
                 last_run = r.run_time
@@ -63,7 +63,7 @@ class EmailFormatter(Formatter):
             return False
             
         changes=0
-        for row in self.reject_ignores(rows):
+        for row in rows:
             if row.__class__.objects.tchanged(row):
                 changes += 1
                 

@@ -183,11 +183,17 @@ class Command(BaseCommand):
             
             if sql_conditions.get('since') is not None:
                 query = query.filter(run_time__gte=sql_conditions.get('since'))
+            
             if sql_conditions.get('where') is not None:
                 query = query.extra(where=[sql_conditions.get('where'),])
+            
             if sql_conditions.get('order') is not None:
                 cols = sql_conditions.get('order').split(',')
                 query = query.order_by(*cols)
+            
+            # Do reject_ignores filter before limit
+            if not output_cfg.get('raw', False):
+                query = output.reject_ignores(query)
             if sql_conditions.get('limit') is not None:
                 query = query[:sql_conditions.get('limit')]
             output.format(query, output_cfg)
