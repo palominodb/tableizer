@@ -352,8 +352,9 @@ Collector(TableUser, "user privilige tracking", action)
 
 def for_action(stream, data, options):
     col_width = options.get('display_width', 80)
+    server = str(data.server) if data.server is not None else ''
     if not options.get('header', False):
-        stream.write('{1:15} {2:{0}}\n'.format(col_width-15, data.server, data))
+        stream.write('{1:15} {2:{0}}\n'.format(col_width-15, server, data))
     else:
         stream.write('{1:15} {2:{0}}\n'.format(col_width-15, 'host', 'grant'))
 

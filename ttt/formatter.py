@@ -28,7 +28,8 @@ class Formatter:
         if 'report_ignore' in cfg.keys():
             return_rows = []
             for r in rows:
-                server_schema_table = '.'.join([r.server, r.database_name, r.table_name if r.table_name is not None else ''])
+                server_schema_table = '.'.join([r.server if r.server is not None else '', r.database_name if r.database_name is not None else '', 
+                                                r.table_name if r.table_name is not None else ''])
                 do_rej = False
                 if cfg.get('report_ignore', {}).get(r.collector) is not None:
                     for reg in cfg.get('report_ignore', {}).get(r.collector, []):

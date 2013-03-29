@@ -45,12 +45,15 @@ Collector(TableView,  "'create view' tracking", action)
 def for_action(stream, data, options):
     display_width = options.get('display_width', 80)
     col_width = display_width/5
+    server = str(data.server) if data.server is not None else ''
+    database_name = str(data.database_name) if data.database_name is not None else ''
+    table_name = str(data.table_name) if data.table_name is not None else ''
     if not options.get('header', False):
         stream.write('{1:^10} {2:^{0}} {3:^{0}} {4:^{0}} {5:^15}\n'.format(col_width,
                                                                             data.status,
-                                                                            data.server[:col_width],
-                                                                            data.database_name[:col_width],
-                                                                            data.table_name[:col_width],
+                                                                            server[:col_width],
+                                                                            database_name[:col_width],
+                                                                            table_name[:col_width],
                                                                             str(data.created_at)))
         if options.get('full', False):
             stream.write('{1}\n{2:{0}}\n{3:{0}}\n{4}\n'.format(display_width,

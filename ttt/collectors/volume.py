@@ -65,22 +65,25 @@ Collector(TableVolume, "table, index, and free size tracking", action)
 def for_action(stream, data, options):
     display_width = options.get('display_width', 80)
     col_width = display_width/6 if options.get('full', False) else display_width/5
+    server = str(data.server) if data.server is not None else ''
+    database_name = str(data.database_name) if data.database_name is not None else ''
+    table_name = str(data.table_name) if data.table_name is not None else ''
     if not options.get('header', False):
         if options.get('full', False):
             stream.write('{1:10} {2:{0}} {3:{0}} {4:{0}} {5:^18} {6:^18} {7:^18}\n'.format(col_width,
                                                                                         data.status[:10],
-                                                                                        data.server[:col_width],
-                                                                                        data.database_name[:col_width],
-                                                                                        data.table_name[:col_width],
+                                                                                        server[:col_width],
+                                                                                        database_name[:col_width],
+                                                                                        table_name[:col_width],
                                                                                         data.data_length/1024/1024 if data.data_length is not None else '',
                                                                                         data.index_length/1024/1024 if data.index_length is not None else '',
                                                                                         data.data_free/1024/1024 if data.data_free is not None else ''))
         else:
             stream.write('{1:10} {2:{0}} {3:{0}} {4:{0}} {5:^18}\n'.format(col_width,
                                                                         data.status[:10],
-                                                                        data.server[:col_width],
-                                                                        data.database_name[:col_width],
-                                                                        data.table_name[:col_width],
+                                                                        server[:col_width],
+                                                                        database_name[:col_width],
+                                                                        table_name[:col_width],
                                                                         (data.data_length + data.index_length)/1024/1024 \
                                                                         if data.data_length is not None and data.index_length is not None else ''))
     else:
