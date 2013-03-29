@@ -386,6 +386,7 @@ class Server(models.Model):
 
     class Meta:
         db_table = 'servers'
+        ordering = ('-cached_size',)
         index_together = (
             ('name',),
         )
@@ -402,6 +403,7 @@ class ServerSchema(models.Model):
     
     class Meta:
         db_table = 'server_schemas'
+        ordering = ('-cached_size',)
         index_together = (
             ('name',),
         )
@@ -418,6 +420,7 @@ class DatabaseTable(models.Model):
         
     class Meta:
         db_table = 'database_tables'
+        ordering = ('-cached_size',)
         index_together = (
             ('name',),
         )
