@@ -9,7 +9,7 @@ class RRDFormatter(Formatter):
         import time
         from datetime import datetime
         try:
-            return datetime.fromtimestamp(rrdtool.last(path))
+            return datetime.fromtimestamp(rrdtool.last(str(path)))
         except Exception:
             return datetime.fromtimestamp(time.mktime([1970,1,1,0,0,0,0,0,0]))
             
