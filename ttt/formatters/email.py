@@ -1,3 +1,4 @@
+from tableizer import settings
 from ttt.formatter import Formatter
 
 class EmailFormatter(Formatter):
@@ -52,13 +53,13 @@ class EmailFormatter(Formatter):
         from django.core import mail
         from django.db.models import get_model
         TableDefinition = get_model('ttt', 'TableDefinition')
-        TableView = get_model('ttt', 'TableViews')
+        TableView = get_model('ttt', 'TableView')
         TableUser = get_model('ttt', 'TableUser')
-        cfg = self.cfg
+        formatter_options = settings.FORMATTER_OPTIONS
         stream = self.stream
         args = list(args)
         options = self.__extract_options__(args)
-        if 'formatter_options' not in cfg.keys() and 'email' not in cfg.get('formatter_options', {}).keys():
+        if 'email' not in formatter_options.keys():
             stream.write('[error]: Need email formatter options set to send email!\n')
             return False
             
@@ -67,8 +68,8 @@ class EmailFormatter(Formatter):
             if row.__class__.objects.tchanged(row):
                 changes += 1
                 
-        if 'send_empty' in cfg.get('formatter_options', {}).get('email', {}).keys():
-            if not cfg.get('formatter_options', {}).get('email', {}).get('send_empty', False) and changes == 0:
+        if 'send_empty' in formatter_options.get('email', {}).keys():
+            if not formatter_options.get('email', {}).get('send_empty', False) and changes == 0:
                 return True
                 
         tstream = StringIO.StringIO()
@@ -79,21 +80,21 @@ class EmailFormatter(Formatter):
         else:
             raise Exception, 'Unable to handle this record type: %s' % (rows[0].__class__)
             
-        subj_prefix = '[TTT]'
-        if 'subjectprefix' in cfg.get('formatter_options', {}).get('email', {}).keys():
-            subj_prefix = cfg.get('formatter_options', {}).get('email', {}).get('subjectprefix')
+        subj_prefix = '[Tableizer]'
+        if 'subjectprefix' in formatter_options.get('email', {}).keys():
+            subj_prefix = formatter_options.get('email', {}).get('subjectprefix')
         
-        if 'emailto' not in cfg.get('formatter_options', {}).get('email', {}).keys():
+        if 'emailto' not in formatter_options.get('email', {}).keys():
             tstream.write('[error]: Need \'formatter_options.email.emailto\' to send mail!\n')
             return False
             
-        delivery_method = cfg.get('formatter_options', {}).get('email', {}).get('delivery_method', 'sendmail')
+        delivery_method = formatter_options.get('email', {}).get('delivery_method', 'sendmail')
         if delivery_method == 'sendmail':
-            location = cfg.get('formatter_options', {}).get('email', {}).get('sendmail_settings', {}).get('location', '/usr/sbin/sendmail')
+            location = formatter_options.get('email', {}).get('sendmail_settings', {}).get('location', '/usr/sbin/sendmail')
             connection = mail.get_connection('ttt_email.backends.sendmail.EmailBackend')
             connection.location = location
         elif delivery_method == 'smtp':
-            smtp_settings = cfg.get('formatter_options', {}).get('email', {}).get('smtp_settings', {})
+            smtp_settings = formatter_options.get('email', {}).get('smtp_settings', {})
             host = smtp_settings.get('host', '')
             port = smtp_settings.get('port', '')
             username = smtp_settings.get('user', '')
@@ -109,7 +110,7 @@ class EmailFormatter(Formatter):
             return False
         
         connection.open()
-        to_email = cfg.get('formatter_options', {}).get('email', {}).get('emailto', '')
+        to_email = formatter_options.get('email', {}).get('emailto', '')
         tstream_val = tstream.getvalue()
         body = '%s changes:\n%s' % (rows[0].__class__.collector, tstream_val)
         email = mail.EmailMessage(subj_prefix, body, 'ttt@localhost',

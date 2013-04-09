@@ -1,0 +1,5 @@
+{% if not database.name %}
+<p>Unreachable</p>
+{% else %}
+<img src="{{ MEDIA_URL }}graphs/database_{{ database.server.name }}_{{ database.name }}.{{ since_string }}.full.png">
+{% endif %}

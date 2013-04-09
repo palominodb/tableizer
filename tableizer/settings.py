@@ -1,4 +1,4 @@
-# Django settings for table_tracking project.
+# Django settings for tableizer project.
 import os
 import sys
 
@@ -76,6 +76,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static-raw'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -107,14 +108,29 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ttt_gui.middleware.SinceStringMiddleware',
 )
 
-ROOT_URLCONF = 'table_tracking.urls'
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+    'ttt_gui.context_processors.since_string',
+    'ttt_gui.context_processors.since_date',
+    'ttt_gui.context_processors.servers',
+)
+
+ROOT_URLCONF = 'tableizer.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'table_tracking.wsgi.application'
+WSGI_APPLICATION = 'tableizer.wsgi.application'
 
 TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT, 'templates'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -123,7 +139,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     #'django.contrib.auth',
     #'django.contrib.contenttypes',
-    #'django.contrib.sessions',
+    'django.contrib.sessions',
     #'django.contrib.sites',
     #'django.contrib.messages',
     #'django.contrib.staticfiles',
@@ -135,6 +151,7 @@ INSTALLED_APPS = (
     'south',
     
     'ttt',
+    'ttt_gui',
 )
 
 try:

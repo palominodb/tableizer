@@ -1,5 +1,6 @@
 import re
 
+from tableizer import settings
 from ttt.formatter import Formatter
 
 class NagiosFormatter(Formatter):
@@ -10,18 +11,18 @@ class NagiosFormatter(Formatter):
     
     def format(self, rows, *args):
         import humanize
-        cfg = self.cfg
+        formatter_options = settings.FORMATTER_OPTIONS
         stream = self.stream
         args = list(args)
         options = self.__extract_options__(args)
         
-        if 'formatter_options' not in cfg.keys() and 'nagios' not in cfg.get('formatter_options', {}).keys():
+        if 'nagios' not in formatter_options.keys():
             stream.write('Must specify nagios formatter options in the config file.')
             return self.UNKNOWN
         
         do_alert = False
         alert_level = self.WARNING
-        cfg_level = cfg.get('formatter_options', {}).get('nagios', {}).get('alert_level', '')
+        cfg_level = formatter_options.get('nagios', {}).get('alert_level', '')
         if cfg_level == 'critical':
             alert_level = self.CRITICAL
         elif cfg_level == 'warning':
@@ -33,12 +34,12 @@ class NagiosFormatter(Formatter):
         else:
             alert_level = self.WARNING
             
-        tables = cfg.get('formatter_options', {}).get('nagios', {}).get('tables') if cfg.get('formatter_options', {}).get('nagios', {}).get('tables') else []
+        tables = formatter_options.get('nagios', {}).get('tables') if formatter_options.get('nagios', {}).get('tables') else []
         output_str = ''
             
         for row in rows:
             if row.__class__.objects.status(row) in ['changed', 'new', 'deleted', 'unreachable']:
-                sst = '.'.join([row.server, row.database_name, row.table_name])
+                sst = '.'.join([str(row.server), str(row.database_name), str(row.table_name)])
                 row_alert = False
                 for rex in tables:
                     if re.match(rex, sst) is not None:

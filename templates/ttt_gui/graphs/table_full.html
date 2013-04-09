@@ -1,0 +1,5 @@
+{% if not table.name %}
+<p>Unreachable</p>
+{% else %}
+<img src="{{ MEDIA_URL }}graphs/table_{{ table.schema.server.name }}_{{ table.schema.name }}_{{ table.name }}.{{ since_string }}.full.png">
+{% endif %}

@@ -1,0 +1,23 @@
+{% load diff_tags %}
+<h3>View</h3>
+{% if history.view %}
+    <table>
+        <thead>
+            <tr>
+                <th>Run Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for defn in history.view reversed %}
+            <tr>
+                <td>{{ defn.run_time }}</td>
+            </tr>
+            <tr>
+                <td><pre><code>{% if show_diff %}{{ defn|gen_diff }}{% else %}{{ defn.create_syntax }}{% endif %}</code></pre></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+<p>No view history recorded</p>
+{% endif %}

@@ -1,4 +1,5 @@
 import re
+import time
 from datetime import datetime
 
 from django.db import connections, models
@@ -6,6 +7,7 @@ from django.db.models.signals import class_prepared
 from django.dispatch import receiver
 
 import managers
+from utilities.utils import get_db_key
 
 # TrackingTable Mixin
 class TrackingTable(models.Model):
@@ -38,11 +40,30 @@ class TrackingTable(models.Model):
         
     @property
     def tchanged(self):
-        return self.__class.__.objects.tchanged(self)
+        return self.__class__.objects.tchanged(self)
         
     @property
     def new(self):
-        return self.__class.__objects.new(self)
+        return self.__class__.objects.new(self)
+        
+    
+    @property
+    def server_id(self):
+        Server = models.get_model('ttt', 'Server')
+        return Server.objects.get(name=self.server).id
+        
+    @property
+    def db_id(self):
+        ServerSchema = models.get_model('ttt', 'ServerSchema')
+        return ServerSchema.objects.get(name=self.database_name, server__name=self.server).id
+        
+    @property
+    def table_id(self):
+        DatabaseTable = models.get_model('ttt', 'DatabaseTable')
+        return DatabaseTable.objects.get(name=self.table_name, schema__name=self.database_name, schema__server__name=self.server).id
+
+    def history(self, since=datetime.fromtimestamp(time.mktime([0,0,0,0,0,0,0,0,0]))):
+        return self.__class__.objects.history(self, since)
 
 @receiver(class_prepared)
 def class_prepared_handler(sender, **kwargs):
@@ -59,8 +80,8 @@ class TableDefinition(TrackingTable):
     create_syntax = models.TextField(null=True, blank=True, default=None)
     run_time = models.DateTimeField(null=True, blank=True, default=None)
     
-    created_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
-    updated_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
+    created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
     
     collector = 'definition'
     objects = managers.TableDefinitionManager()
@@ -71,6 +92,14 @@ class TableDefinition(TrackingTable):
             ('run_time',),
             ('server', 'database_name', 'table_name'),
         )
+        
+    @property
+    def stat_created_at(self):
+        return self.created_at
+    
+    @property
+    def prev_stat_created_at(self):
+        return self.previous_version.created_at if self.previous_version is not None else ''
         
 class TableVolume(TrackingTable):
     server = models.CharField(max_length=100, null=True, blank=True, default=None)
@@ -119,7 +148,7 @@ class TableView(TrackingTable):
     run_time = models.DateTimeField(null=True, blank=True, default=None)
     
     collector = 'view'
-    objects = managers.TrackingTableManager()
+    objects = managers.TableViewManager()
     
     class Meta:
         db_table = 'table_views'
@@ -183,8 +212,8 @@ class TableUser(TrackingTable):
     super_priv = models.CharField(db_column='Super_priv', max_length=1, null=True, blank=True, default=None)
     
     run_time = models.DateTimeField(null=True, blank=True, default=None)
-    created_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
-    updated_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
+    created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
     
     collector = 'user'
     objects = managers.TableUserManager()
@@ -307,12 +336,8 @@ class TableUser(TrackingTable):
             return gstr
     
     @property
-    def server(self):
-        return self.host if self.host is not None else ''
-        
-    @property
     def database_name(self):
-        return self.db if self.db is not None else ''
+        return str(self.db)
         
     # Returns permissions as a set
     @property
@@ -379,8 +404,8 @@ class Server(models.Model):
     name = models.CharField(max_length=100, null=False)
     cached_size = models.IntegerField(null=True, blank=True, default=None)
     
-    created_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
-    updated_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
+    created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
     
     objects = managers.ServerManager()
 
@@ -396,8 +421,8 @@ class ServerSchema(models.Model):
     server = models.ForeignKey(Server, null=True, blank=True, default=None)
     cached_size = models.IntegerField(null=True, blank=True, default=None)
     
-    created_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
-    updated_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
+    created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
     
     objects = managers.ServerSchemaManager()
     
@@ -413,8 +438,8 @@ class DatabaseTable(models.Model):
     schema = models.ForeignKey(ServerSchema, null=True, blank=True, default=None)
     cached_size = models.IntegerField(null=True, blank=True, default=None)
     
-    created_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
-    updated_at = models.DateTimeField(null=True, blank=True, default=datetime.now())
+    created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
     
     objects = managers.DatabaseTableManager()
         
@@ -424,6 +449,77 @@ class DatabaseTable(models.Model):
         index_together = (
             ('name',),
         )
+        
+    @property
+    def table_name(self):
+        return self.name
+    
+    @property
+    def stats(self):
+        stat_dict = {}
+        for t in [TableDefinition, TableVolume, TableView, TableUser]:
+            if t != TableUser:
+                objects = t.objects.filter(server=self.schema.server.name, database_name=self.schema.name,
+                                            table_name=self.name).order_by('-id')
+            else:
+                objects = t.objects.filter(server=self.schema.server.name, db=self.schema.name,
+                                            table_name=self.name).order_by('-id')
+            if objects.count() > 0:
+                stat_dict[t.collector] = objects[0]
+            else:
+                stat_dict[t.collector] = None
+        return stat_dict
+    
+    @property
+    def has_stats(self):
+        return self.stats.get('definition') is not None or self.stats.get('volume')  is not None \
+            or self.stats.get('view')
+    
+    @property
+    def table_type(self):
+        type_ = 'base'
+        if self.stats.get('definition') is None and self.stats.get('view') is None:
+            type_ = 'unknown'
+        elif self.stats.get('definition') is None and self.stats.get('view') is not None:
+            type_ = 'view'
+        return type_
+    
+    @property
+    def create_syntax(self):
+        return self.get_create()
+    
+    @property
+    def stat_created_at(self):
+        try:
+            return self.stats.get('definition').created_at if self.table_type == 'base' else self.stats.get('view').run_time
+        except Exception:
+            return ''
+    
+    @property
+    def prev_stat_created_at(self):
+        try:
+            return self.previous_version.created_at if self.table_type == 'base' else self.previous_version.run_time
+        except Exception:
+            return ''
+    
+    @property
+    def previous_version(self):
+        return self.stats.get('definition').previous_version if self.table_type == 'base' else self.stats.get('view').previous_version
+        
+    def get_create(self):
+        if self.table_type == 'base':
+            return self.stats.get('definition').create_syntax
+        elif self.table_type == 'view':
+            return self.stats.get('view').create_syntax
+        else:
+            return None
+            
+    def get_history(self, since=datetime.fromtimestamp(time.mktime([0,0,0,0,0,0,0,0,0]))):
+        r = {}
+        for k,v in self.stats.items():
+            if v is not None:
+                r[k] = v.history(since=since)
+        return r
         
 class Snapshot(models.Model):
     txn = models.IntegerField(null=True, blank=True, default=None)
@@ -470,6 +566,7 @@ class Tables(models.Model):
     table_comment = models.CharField(db_column='TABLE_COMMENT', max_length=2048)
     
     objects = managers.TableManager() 
+    host = ''
     
     class Meta:
         managed = False
@@ -483,10 +580,12 @@ class Tables(models.Model):
         
     @property
     def create_syntax(self):
-        cur = connections['information_schema'].cursor()
-        cur.execute("SHOW CREATE TABLE `%s`.`%s`" % (self.table_schema, self.table_name))
-        res = cur.fetchone()
-        return res[1]
+        k = get_db_key(self.host)
+        if k is not None:
+            cur = connections[k].cursor()
+            cur.execute("SHOW CREATE TABLE `%s`.`%s`" % (self.table_schema, self.table_name))
+            res = cur.fetchone()
+            return res[1]
                 
     @property
     def system_table(self):

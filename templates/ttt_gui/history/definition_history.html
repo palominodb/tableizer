@@ -1,0 +1,25 @@
+{% load diff_tags %}
+<h3>Definition</h3>
+{% if history.definition %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Run Date</th>
+                <th>Create Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for defn in history.definition reversed %}
+            <tr>
+                <td>{{ defn.run_time }}</td>
+                <td>{{ defn.created_at }}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><pre><code>{% if show_diff %}{{ defn|gen_diff }}{% else %}{{ defn.create_syntax }}{% endif %}</code></pre></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+<p>No definition history recorded</p>
+{% endif %}

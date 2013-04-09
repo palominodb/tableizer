@@ -7,6 +7,7 @@ def action(rd):
     for t in rd.tables:
         if t.system_table:
             continue
+        t.host = rd.host
         newt = rd.stat(
             server=rd.host,
             database_name=t.table_schema,
@@ -32,14 +33,14 @@ def action(rd):
     
     for t in rd.get_prev_version():
         rd.logger.info("[delete-check] %s.%s" % (t.database_name, t.table_name))
-        g = rd.tables.find_by_schema_and_table(t.database_name, t.table_name)
+        g = rd.tables.find_by_schema_and_table(rd.host, t.database_name, t.table_name)
         if g is None and not rd.stat.objects.deleted(t):
             tbl = rd.stat(
                 server=rd.host,
-                database_name=t.table_schema,
+                database_name=t.database_name,
                 table_name=t.table_name,
                 create_syntax=None,
-                created_at=t.create_time,
+                created_at=t.created_at,
                 run_time=rd.run_time,
                 updated_at=None,
             )

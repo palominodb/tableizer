@@ -33,13 +33,13 @@ class RRDFormatter(Formatter):
                 pass
             rra_s = []
             for rra in ['AVERAGE', 'MAX', 'MIN']:
-                for cyl in [[1, 172800], [2, 1209600], [4, 2592000], [8,  15552000], [16, 31557600], [32, 63115200]]:
+                for cyl in [[1, 172800.0], [2, 1209600.0], [4, 2592000.0], [8,  15552000.0], [16, 31557600.0], [32, 63115200.0]]:
                     incr = cyl[0]
                     wind = cyl[1]
                     if step < wind:
                         rra_s.append('RRA:%s:0.25:%s:%s' % (rra, str(incr), str(float(wind/step))))
             rrdtool.create(
-                str(path), '--step', str(step), '--start', str(int(time.mktime(start.timetuple()))),
+                str(path), '--step', str(step), '--start', str(int(time.mktime(start.timetuple()))-1),
                 'DS:data_length:GAUGE:%s:U:U' % (str(step*2)),
                 'DS:index_length:GAUGE:%s:U:U' % (str(step*2)),
                 'DS:data_free:GAUGE:%s:U:U' % (str(step*2)),
@@ -53,7 +53,6 @@ class RRDFormatter(Formatter):
         TableVolume = get_model('ttt', 'TableVolume')
         CollectorRun = get_model('ttt', 'CollectorRun')
         Server = get_model('ttt', 'Server')
-        cfg = self.cfg
         stream = self.stream
         args = list(args)
         options = self.__extract_options__(args)
@@ -99,8 +98,7 @@ class RRDFormatter(Formatter):
                     except Exception, e:
                         continue
                     self.update_rrd(rrd_path, run, [s.data_length, s.index_length, 'U'])
-        
-        
+                
         for sch in TableVolume.objects.schemas():
             if sch.name == 'information_schema':
                 continue
@@ -140,8 +138,13 @@ class RRDFormatter(Formatter):
                         s = TableVolume.objects.filter(run_time=run, server=srv, database_name=sch, table_name=tbl.name).order_by('id')[0]
                     except Exception, e:
                         continue
-                    self.update_rrd(rrd_path, run, [s.data_length, s.index_length, s.data_free])
-                    
+                    if s.data_length is None:
+                        s.data_length = 0
+                    if s.index_length is None:
+                        s.index_length = 0
+                    if s.data_free is None:
+                        s.data_free = 0
+                    self.update_rrd(rrd_path, run, [s.data_length, s.index_length, s.data_free])          
         return True
 
 RRDFormatter.runner_for('rrd')

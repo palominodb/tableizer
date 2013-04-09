@@ -16,8 +16,8 @@ class Migration(SchemaMigration):
             ('table_name', self.gf('django.db.models.fields.CharField')(default=None, max_length=64, null=True, blank=True)),
             ('create_syntax', self.gf('django.db.models.fields.TextField')(default=None, null=True, blank=True)),
             ('run_time', self.gf('django.db.models.fields.DateTimeField')(default=None, null=True, blank=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
-            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
+            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
         ))
         db.send_create_signal(u'ttt', ['TableDefinition'])
 
@@ -99,8 +99,8 @@ class Migration(SchemaMigration):
             ('shutdown_priv', self.gf('django.db.models.fields.CharField')(default=None, max_length=1, null=True, db_column='Shutdown_priv', blank=True)),
             ('super_priv', self.gf('django.db.models.fields.CharField')(default=None, max_length=1, null=True, db_column='Super_priv', blank=True)),
             ('run_time', self.gf('django.db.models.fields.DateTimeField')(default=None, null=True, blank=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
-            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
+            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
         ))
         db.send_create_signal(u'ttt', ['TableUser'])
 
@@ -117,8 +117,8 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('cached_size', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
-            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
+            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
         ))
         db.send_create_signal(u'ttt', ['Server'])
 
@@ -128,8 +128,8 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('server', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['ttt.Server'], null=True, blank=True)),
             ('cached_size', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
-            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
+            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
         ))
         db.send_create_signal(u'ttt', ['ServerSchema'])
 
@@ -139,8 +139,8 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('schema', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['ttt.ServerSchema'], null=True, blank=True)),
             ('cached_size', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
-            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 3, 15, 0, 0), null=True, blank=True)),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
+            ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
         ))
         db.send_create_signal(u'ttt', ['DatabaseTable'])
 
@@ -193,30 +193,30 @@ class Migration(SchemaMigration):
             'last_run': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True', 'blank': 'True'})
         },
         u'ttt.databasetable': {
-            'Meta': {'object_name': 'DatabaseTable', 'db_table': "'database_tables'"},
+            'Meta': {'ordering': "('-cached_size',)", 'object_name': 'DatabaseTable', 'db_table': "'database_tables'"},
             'cached_size': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'}),
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'schema': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': u"orm['ttt.ServerSchema']", 'null': 'True', 'blank': 'True'}),
-            'updated_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'})
+            'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'})
         },
         u'ttt.server': {
-            'Meta': {'object_name': 'Server', 'db_table': "'servers'"},
+            'Meta': {'ordering': "('-cached_size',)", 'object_name': 'Server', 'db_table': "'servers'"},
             'cached_size': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'}),
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'updated_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'})
+            'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'})
         },
         u'ttt.serverschema': {
-            'Meta': {'object_name': 'ServerSchema', 'db_table': "'server_schemas'"},
+            'Meta': {'ordering': "('-cached_size',)", 'object_name': 'ServerSchema', 'db_table': "'server_schemas'"},
             'cached_size': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'}),
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'server': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': u"orm['ttt.Server']", 'null': 'True', 'blank': 'True'}),
-            'updated_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'})
+            'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'})
         },
         u'ttt.snapshot': {
             'Meta': {'object_name': 'Snapshot', 'db_table': "'snapshots'"},
@@ -230,13 +230,13 @@ class Migration(SchemaMigration):
         u'ttt.tabledefinition': {
             'Meta': {'object_name': 'TableDefinition', 'db_table': "'table_definitions'"},
             'create_syntax': ('django.db.models.fields.TextField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'}),
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             'database_name': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '64', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'run_time': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'server': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'table_name': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '64', 'null': 'True', 'blank': 'True'}),
-            'updated_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'})
+            'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'})
         },
         u'ttt.tables': {
             'Meta': {'unique_together': "(('table_schema', 'table_name'),)", 'object_name': 'Tables', 'db_table': "'TABLES'", 'managed': 'False'},
@@ -274,7 +274,7 @@ class Migration(SchemaMigration):
             'create_tmp_table_priv': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '1', 'null': 'True', 'db_column': "'Create_tmp_table_priv'", 'blank': 'True'}),
             'create_user_priv': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '1', 'null': 'True', 'db_column': "'Create_user_priv'", 'blank': 'True'}),
             'create_view_priv': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '1', 'null': 'True', 'db_column': "'Create_view_priv'", 'blank': 'True'}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'}),
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             'db': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '255', 'null': 'True', 'db_column': "'Db'", 'blank': 'True'}),
             'delete_priv': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '1', 'null': 'True', 'db_column': "'Delete_priv'", 'blank': 'True'}),
             'drop_priv': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '1', 'null': 'True', 'db_column': "'Drop_priv'", 'blank': 'True'}),
@@ -314,7 +314,7 @@ class Migration(SchemaMigration):
             'table_name': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '255', 'null': 'True', 'db_column': "'Table_name'", 'blank': 'True'}),
             'trigger_priv': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '1', 'null': 'True', 'db_column': "'Trigger_priv'", 'blank': 'True'}),
             'update_priv': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '1', 'null': 'True', 'db_column': "'Update_priv'", 'blank': 'True'}),
-            'updated_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 15, 0, 0)', 'null': 'True', 'blank': 'True'}),
+            'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '255', 'null': 'True', 'db_column': "'User'", 'blank': 'True'}),
             'x509_issuer': ('django.db.models.fields.BinaryField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'x509_subject': ('django.db.models.fields.BinaryField', [], {'default': 'None', 'null': 'True', 'blank': 'True'})

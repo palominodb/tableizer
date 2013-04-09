@@ -1,18 +1,23 @@
 import time
 from datetime import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.query import QuerySet
+
+from utilities.utils import get_db_key
 
 # Tables Manager
 class TableMixin(object):
     
-    def find_by_schema_and_table(self, database_name, table_name):
-        tables = self.using('information_schema').filter(table_schema=database_name, table_name=table_name)
-        if tables.count() > 0:
-            return tables[0]
-        else:
-            return None
+    def find_by_schema_and_table(self, host, database_name, table_name):
+        k = get_db_key(host)
+        if k is not None:
+            tables = self.using(k).filter(table_schema=database_name, table_name=table_name)
+            if tables.count() > 0:
+                return tables[0]
+            else:
+                return None
 
 class TableQuerySet(QuerySet, TableMixin):
     pass
@@ -24,6 +29,12 @@ class TableManager(models.Manager, TableMixin):
 
 # Server Manager
 class ServerMixin(object):
+    
+    def get_or_none(self, *args, **kwargs):
+        try:
+            return self.get(*args, **kwargs)
+        except ObjectDoesNotExist:
+            return None
     
     def find_by_name(self, name):
         servers = self.filter(name=name)
@@ -42,6 +53,12 @@ class ServerManager(models.Manager, ServerMixin):
         
 # ServerSchema Manager
 class ServerSchemaMixin(object):
+    
+    def get_or_none(self, *args, **kwargs):
+        try:
+            return self.get(*args, **kwargs)
+        except ObjectDoesNotExist:
+            return None
     
     def find_by_name(self, name):
         schemas = self.filter(name=name)
@@ -103,12 +120,18 @@ class SnapshotManager(models.Manager, SnapshotMixin):
         return self.head() + 1
         
     def stat_is_new(self, stat_obj):
-        return self.filter(collector_run__id=stat_obj.collector_id, statistic_id=stat_obj.id) == 1
+        return self.filter(collector_run__id=stat_obj.collector_id, statistic_id=stat_obj.id).count() == 1
         
 # TrackingTable Manager
 class TrackingTableMixin(object):
     tables = {}
     c_id = None # cached collector id
+    
+    def get_or_none(self, *args, **kwargs):
+        try:
+            return self.get(*args, **kwargs)
+        except ObjectDoesNotExist:
+            return None
     
     def find_most_recent_versions(self, cls, extra_params={}, txn=None):
         res = self.all()
@@ -156,7 +179,10 @@ class TrackingTableMixin(object):
             return None
         
     def find_last_by_table(self, server, i_s_table):
-        tts = self.filter(server=server, database_name=i_s_table.table_schema, table_name=i_s_table.table_name)
+        try:
+            tts = self.filter(server=server, database_name=i_s_table.table_schema, table_name=i_s_table.table_name)
+        except Exception:
+            tts = self.filter(server=server, db=i_s_table.table_schema, table_name=i_s_table.table_name)
         if tts.count() > 0:
             return tts.order_by('-id')[0]
         else:
@@ -175,8 +201,12 @@ class TrackingTableMixin(object):
             return None
             
     def history(self, instance, since=datetime.fromtimestamp(time.mktime([0,0,0,0,0,0,0,0,0]))):
-        return self.filter(id__lte=instance.id, run_time__gte=since, server=instance.server,
-                            database_name=instance.database_name, table_name=instance.table_name)
+        try:
+            return self.filter(id__lte=instance.id, run_time__gte=since, server=instance.server,
+                                database_name=instance.database_name, table_name=instance.table_name)
+        except Exception:
+            return self.filter(id__lte=instance.id, run_time__gte=since, server=instance.server,
+                                db=instance.database_name, table_name=instance.table_name)
     
     def runs(self, over=None):
         q = self.all().order_by('run_time')
@@ -263,14 +293,11 @@ class TableDefinitionManager(TrackingTableManager, TableDefinitionMixin):
             table_name=None,
             create_syntax=None,
             run_time=run_time,
-            created_at=None,
-            updated_at=None
         )
         
     def unreachable(self, instance):
         return instance.database_name is None and instance.table_name is None \
-            and instance.create_syntax is None and instance.created_at is None \
-            and instance.updated_at is None
+            and instance.create_syntax is None
             
     def deleted(self, instance):
         return instance.create_syntax is None and instance.updated_at is None
@@ -300,8 +327,8 @@ class TableVolumeMixin(object):
             last = t
             if t.unreachable:
                 continue
-            d_length += t.data_length
-            i_length += t.index_length
+            d_length += t.data_length if t.data_length is not None else 0
+            i_length += t.index_length if t.index_length is not None else 0
         v = TableVolume(server=server, data_length=None if d_length == 0 else d_length,
                         index_length=None if i_length == 0 else i_length,
                         run_time=None if last is None else last.run_time)
@@ -336,13 +363,21 @@ class TableVolumeMixin(object):
                 continue
             if t.unreachable:
                 continue
-            d_length += t.data_length
-            i_length += t.index_length
+            d_length += t.data_length if t.data_length is not None else 0
+            i_length += t.index_length if t.index_length is not None else 0
         v = TableVolume(server=server, database_name=database,
                         data_length=None if d_length == 0 else d_length,
                         index_length=None if i_length == 0 else i_length,
                         run_time=None if last is None else last.run_time)
         return v
+    
+    def database_sizes0(self, server, database, time='latest'):
+        s = self.database_sizes(server, database, time)
+        if s.data_length is None:
+            s.data_length = 0
+        if s.index_length is None:
+            s.index_length = 0
+        return s
     
 class TableVolumeQuerySet(QuerySet, TableVolumeMixin):
     pass
@@ -446,8 +481,6 @@ class TableUserManager(TrackingTableManager, TableUserMixin):
             server=host,
             run_time=run_time,
             permtype=self.UNREACHABLE_ENTRY,
-            created_at=None,
-            updated_at=None,
         )
          
     def unreachable(self, instance):

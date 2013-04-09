@@ -43,7 +43,7 @@ def action(rd):
         
     for t in rd.get_prev_version():
         rd.logger.info("[delete-check] %s.%s" % (t.database_name, t.table_name))
-        g = rd.tables.find_by_schema_and_table(t.database_name, t.table_name)
+        g = rd.tables.find_by_schema_and_table(rd.host, t.database_name, t.table_name)
         if g is None and not rd.stat.objects.deleted(t):
             tbl = rd.stat(
                 server=rd.host,

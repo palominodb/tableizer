@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load diff_tags %}
+{% block hero %}
+<h1>History</h1>
+{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            {% include 'ttt_gui/shared/show_diffs.html' %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+            <h3>Table Definitions</h3>
+        </div>
+        <div class="span6">
+            <h3>Table Views</h3>
+        </div>
+    </div>
+    <div class="row">
+        {% regroup tables by run_time as tables_group %}
+        <div class="span6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Server</th>
+                        <th>Database</th>
+                        <th>Table</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in tables_group %}
+                    <tr>
+                        <td colspan="4"><strong>{{ group.grouper }}</strong></td>
+                    </tr>
+                    {% for defn in group.list %}
+                    <tr>
+                        <td><strong>{{ defn.status }}</strong></td>
+                        <td><a href="{% url 'server_detail' defn.server_id %}">{{ defn.server }}</a></td>
+                        <td>{% if defn.database_name %}<a href="{% url 'database_detail' defn.db_id %}">{{ defn.database_name }}</a>{% endif %}</td>
+                        <td>{% if defn.deleted %}{{ defn.table_name }}{% else %}{% if defn.database_name %}<a href="{% url 'table_detail' defn.table_id %}">{{ defn.table_name }}</a>{% endif %}{% endif %}</td>
+                    </tr>
+                    {% if show_diff %}
+                    <tr>
+                        <td colspan="4">
+                            <pre><code>{{ defn|gen_diff }}</code></pre>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% regroup views by run_time as views_group %}
+        <div class="span6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Server</th>
+                        <th>Database</th>
+                        <th>Table</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in views_group %}
+                    <tr>
+                        <td colspan="4"><strong>{{ group.grouper }}</strong></td>
+                    </tr>
+                    {% for defn in group.list %}
+                    {% ifnotequal defn.status 'unchanged' %}
+                    <tr>
+                        <td><strong>{{ defn.status }}</strong></td>
+                        <td><a href="{% url 'server_detail' defn.server_id %}">{{ defn.server }}</a></td>
+                        <td>{% if defn.database_name %}<a href="{% url 'database_detail' defn.db_id %}">{{ defn.database_name }}</a>{% endif %}</td>
+                        <td>{% if defn.deleted %}{{ defn.table_name }}{% else %}{% if defn.database_name %}<a href="{% url 'table_detail' defn.table_id %}">{{ defn.table_name }}</a>{% endif %}{% endif %}</td>
+                    </tr>
+                    {% endifnotequal %}
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}
+
+{% block extra_js %}
+<script type="text/javascript">
+    {% include 'ttt_gui/shared/show_diffs.js' %}
+</script>
+{% endblock extra_js %}

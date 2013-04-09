@@ -1,18 +1,21 @@
 import glob
 import logging
 import os
+from datetime import datetime
 
 from django.db import connection, transaction, OperationalError, InternalError
 
 from .models import CollectorRun, DatabaseTable, Server, ServerSchema, Snapshot, \
                     Tables
+from tableizer import settings
+from utilities.utils import get_db_key
 
 logger = logging.getLogger('django.db.backends')
 
 class CollectorRunningError(Exception):
     pass
 
-class CollectorRegistry:
+class CollectorRegistry(object):
     collectors = set()
     loaded = False
     
@@ -49,9 +52,9 @@ class CollectorRegistry:
         cls.collectors = set()
         cls.loaded = False
 
-class CollectionDirector:
+class CollectionDirector(object):
     
-    class RunData:
+    class RunData(object):
         
         def __init__(self, host, tables, collector, run_time):
             self.host = host
@@ -94,7 +97,10 @@ class CollectionDirector:
             self.delete(old_id)
         
         def delete(self, _id):
-            self.cur_snapshot.remove(_id)
+            try:
+                self.cur_snapshot.remove(_id)
+            except KeyError:
+                pass
     
         def save(self, txn):
             self.runref.save()
@@ -113,15 +119,17 @@ class CollectionDirector:
                     snap.statistic_id = i
                 snap.save()
     
-    def __init__(self, cfg, run_time):
+    def __init__(self, run_time):
         self.host = None
         self.run_time = run_time
-        self.cfg = cfg
         self.cached_tables = None
         CollectorRegistry.load() # Make sure collectors are loaded.
             
     def recache_tables(self):
-        self.cached_tables = Tables.objects.using('information_schema').all()
+        host = self.host
+        k = get_db_key(host)
+        if k is not None:
+            self.cached_tables = Tables.objects.using(k).all()
       
     def collect(self, host, collector):
         with transaction.commit_on_success():
@@ -133,9 +141,12 @@ class CollectionDirector:
                     self.recache_tables()
                     
                     srv = Server.objects.get_or_create(name=host)[0]
+                    srv.save()
                     for tbl in self.cached_tables:
                         sch = ServerSchema.objects.get_or_create(server=srv, name=tbl.table_schema)[0]
+                        sch.save()
                         t = DatabaseTable.objects.get_or_create(schema=sch, name=tbl.table_name)[0]
+                        t.save()
                 except (OperationalError, InternalError):
                     prev = collector.stat.objects.find_last_by_server(host)
                     rd = CollectionDirector.RunData(host, None, collector, self.run_time)
@@ -146,7 +157,7 @@ class CollectionDirector:
                     raise
                     
             if rd is None:
-                if self.cfg["ttt_connection"]["adapter"].lower() == 'mysql':
+                if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.mysql':
                     cur = connection.cursor()
                     cur.execute("SELECT GET_LOCK('ttt.collector.%s', 0.25)" % (collector.id))
                     if cur.fetchone()[0] != 1:
@@ -155,13 +166,13 @@ class CollectionDirector:
                 rd= CollectionDirector.RunData(self.host, self.cached_tables, collector, self.run_time)
                 collector.run(rd)
                         
-                if self.cfg["ttt_connection"]["adapter"].lower() == 'mysql':
+                if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.mysql':
                     cur = connection.cursor()
                     cur.execute("SELECT RELEASE_LOCK('ttt.collector.%s')" % (collector.id))
             
             return rd
                             
-class Collector:
+class Collector(object):
 
     def __init__(self, stat, desc, action):
         self.stat = stat

@@ -1,0 +1,25 @@
+<h3>Volume</h3>
+{% if history.volume %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Run Time</th>
+                <th>Data Length</th>
+                <th>Index Length</th>
+                <th>Data Free</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for defn in history.volume %}
+            <tr>
+                <td>{{ defn.run_time }}</td>
+                <td>{{ defn.data_length|filesizeformat }}</td>
+                <td>{{ defn.index_length|filesizeformat }}</td>
+                <td>{{ defn.data_free|filesizeformat }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+<p>No volume information recorded.</p>
+{% endif %}

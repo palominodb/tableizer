@@ -1,0 +1,8 @@
+<form id="show-diff-form" class="form-horizontal" method="GET">{% csrf_token %}
+    <div id="show-diff-group" class="btn-group" data-toggle="buttons-radio">
+        <button type="button" class="btn" value="1">Show Diffs</button>
+        <button type="button" class="btn" value="0">Don't Show Diffs</button>
+    </div>
+    <input type="hidden" name="show_diff" value="0" />
+    <input type="submit" class="btn" value="Go" />
+</form>

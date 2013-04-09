@@ -6,22 +6,13 @@ from optparse import make_option, OptionError, OptionParser
 
 from django.core.management.base import BaseCommand, CommandError
 
-import yaml
-
+from tableizer import settings
 from ttt.collector import CollectorRegistry
-from ttt.db import Db
 from ttt.formatter import Formatter
 from ttt.models import TrackingTable
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option(
-            '-c',
-            '--config',
-            dest='config',
-            default=None,
-            help='Path to ttt config file.',
-        ),
         make_option(
             '--stat',
             dest='stat',
@@ -123,15 +114,6 @@ class Command(BaseCommand):
                print "{0:20} - {1}".format(col.stat.collector, col.desc)
             sys.exit(0)
             
-        for option in self.option_list:
-            if option.dest == 'config':
-                config_option = option
-        if options.get('config') is None:
-            raise OptionError('config parameter is required.', config_option)
-        
-        Db.open(yaml.load(open(options.get('config'), 'r')))
-        cfg = Db.app_config
-        
         since_regex = re.search('(\d+(?:\.?\d+)?)([hdwm])?', options.get('since', ''))
         if options.get('since') == 'last':
             find_type = 'last'
@@ -165,14 +147,13 @@ class Command(BaseCommand):
         if options.get('limit') is not None:
             sql_conditions['limit'] = options.get('limit')
         
-        if 'report_options' in cfg.keys():
-            for k,v in cfg.get('report_options', {}).items():
-                output_cfg[k] = v
+        for k,v in settings.REPORT_OPTIONS.items():
+            output_cfg[k] = v
                 
         output_cfg['full'] = options.get('output_full')
         output_cfg['raw'] = options.get('output_raw')
         
-        output = Formatter.get_runner_for(options.get('output'))(sys.stderr, cfg)
+        output = Formatter.get_runner_for(options.get('output'))(sys.stderr)
         
         try:
             Model = TrackingTable._TrackingTable__tables.get(options.get('stat', 'definition'))

@@ -1,48 +1,25 @@
-import warnings
-
-from django.core.management import call_command
-
 import MySQLdb
 
-class Db:
-    app_config = None
+from tableizer import settings
+from utilities.utils import get_db_key
+
+class Db(object):
     
     @classmethod
-    def open(cls, opts):
-        cls.app_config = opts
-        
-    @classmethod
     def open_schema(cls, host, schema):
-        dsn = cls.app_config.get('dsn_connection')
-        dsn.update({
+        k = get_db_key(host)
+        db = settings.TABLEIZER_DBS.get(k)
+        conn_dict = {
             'host': host,
             'db': schema,
             'cursorclass': MySQLdb.cursors.DictCursor,
-        })
-        connection = MySQLdb.connect(**dsn)
+            'user': db.get('USER', ''),
+            'passwd': db.get('PASSWORD', ''),
+        }
+        port = db.get('PORT', '')
+        if port != '':
+            conn_dict.update({
+                'port': int(port)
+            })
+        connection = MySQLdb.connect(**conn_dict)
         return connection
-        
-    @classmethod
-    def migrate(cls):
-        config = cls.app_config
-        if config.get('ttt_connection', {}).get('adapter') == 'mysql':
-            if config.get('ttt_connection', {}).get('host') is None or \
-                    config.get('ttt_connection', {}).get('username') is None or \
-                    config.get('ttt_connection', {}).get('password') is None:
-                raise Exception, 'ttt_connection host, username and password are required.'
-            db = MySQLdb.connect(
-                host=config.get('ttt_connection').get('host'),
-                user=config.get('ttt_connection').get('username'),
-                passwd=config.get('ttt_connection').get('password')
-            )
-            
-            c = db.cursor()
-            warnings.filterwarnings('ignore')   # turn warnings off for MySQLdb
-            c.execute(
-                '''
-                    CREATE DATABASE IF NOT EXISTS ttt;
-                '''
-            )
-            db.close()
-        
-        call_command('syncdb', verbosity=1, noinput=False, migrate=True)

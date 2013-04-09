@@ -2,6 +2,7 @@ import glob
 import os
 import re
 
+from tableizer import settings
 from ttt.collector import CollectorRegistry
 
 class Formatter:
@@ -9,9 +10,8 @@ class Formatter:
     formatters = {}
     runners = {}
     
-    def __init__(self, stream, cfg):
+    def __init__(self, stream):
         self.stream = stream
-        self.cfg = cfg
         
     def __extract_options__(self, param):
         if len(param) > 0:
@@ -24,41 +24,42 @@ class Formatter:
         raise Exception, "Use a real formatter."
     
     def reject_ignores(self, rows):
-        cfg = self.cfg
-        if 'report_ignore' in cfg.keys():
-            return_rows = []
-            for r in rows:
-                server_schema_table = '.'.join([r.server if r.server is not None else '', r.database_name if r.database_name is not None else '', 
-                                                r.table_name if r.table_name is not None else ''])
-                do_rej = False
-                if cfg.get('report_ignore', {}).get(r.collector) is not None:
-                    for reg in cfg.get('report_ignore', {}).get(r.collector, []):
+        try:
+            report_ignore = settings.REPORT_IGNORE
+        except Exception, e:
+            return rows
+        return_rows = []
+        for r in rows:
+            server_schema_table = '.'.join([r.server if r.server is not None else '', r.database_name if r.database_name is not None else '', 
+                                            r.table_name if r.table_name is not None else ''])
+            do_rej = False
+            if report_ignore.get(r.collector) is not None:
+                for reg in report_ignore.get(r.collector, []):
+                    re_match = re.search(reg, server_schema_table)
+                    if re_match is not None:
+                        do_rej = True
+                        break
+            if not do_rej:
+                if report_ignore.get('global') is not None:
+                    for reg in report_ignore.get('global', []):
                         re_match = re.search(reg, server_schema_table)
                         if re_match is not None:
                             do_rej = True
                             break
-                if not do_rej:
-                    if cfg.get('report_ignore', {}).get('global') is not None:
-                        for reg in cfg.get('report_ignore', {}).get('global', []):
-                            re_match = re.search(reg, server_schema_table)
-                            if re_match is not None:
-                                do_rej = True
-                                break
-                if not do_rej:
-                    return_rows.append(r)
-            return return_rows
-        else:        
-            return rows
+            if not do_rej:
+                return_rows.append(r)
+        return return_rows
       
     def need_option(self, key):
-        cfg = self.cfg
-        if str(self.media) not in cfg.get('formatter_options', {}).keys() or key not in cfg.get('formatter_options', {}).get(self.media, {}).keys():
+        formatter_options = settings.FORMATTER_OPTIONS
+        if str(self.media) not in formatter_options.keys() or key not in formatter_options.get(self.media, {}).keys():
             raise NameError, "Missing formatter_options.%s.%s in config." % (self.media, key)
-        return cfg.get('formatter_options', {}).get(str(self.media), {}).get(key)
+        return formatter_options.get(str(self.media), {}).get(key)
     
     def want_option(self, key, value=None):
-        if key in self.cfg.get('formatter_options', {}).get(self.media, {}).keys():
-            return self.cfg.get('formatter_options', {}).get(self.media, {}).get(key)
+        formatter_options = settings.FORMATTER_OPTIONS
+        if key in formatter_options.get(self.media, {}).keys():
+            return formatter_options.get(self.media, {}).get(key)
         else:
             return value
     

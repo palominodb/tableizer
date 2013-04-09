@@ -2,6 +2,7 @@ import re
 import shutil
 import sys
 import traceback
+import warnings
 from datetime import datetime, timedelta
 from optparse import make_option, OptionError, OptionParser
 
@@ -12,16 +13,13 @@ import humanize
 import yaml
 
 from ttt.collector import CollectorRegistry
-from ttt.db import Db
 from ttt.models import CollectorRun, Server, DatabaseTable, Snapshot
 from utilities.utils import flatten
 
 class BaseAction:
-    def __init__(self, config, debug, *args):
-        self.config = config
+    def __init__(self, debug, *args):
         self.debug = debug
         self.args = list(flatten(args))
-        Db.open(self.config)
         
 class PurgeAction(BaseAction):
 
@@ -106,25 +104,8 @@ class ListAction(BaseAction):
                                                 srv.updated_at)
         return 0
         
-#        max_name = srvs.map { |s| s.name.length }.max
-#    max_size = sprintf("%4.3G", srvs.map { |s| s.cached_size / 1.0.gigabyte }.max).length
-#    puts rf.format(
-#      "Host#{" "*max_name}Size#{" "*(max_size+4)}Last Updated\n" +
-#      "----#{"-"*max_name}----#{"-"*(max_size+4)}------------------------------",
-#      ("["*max_name) + "   ]]]].[[[G" + "    ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]",
-#      (srvs.map { |s| s.name }), (srvs.map { |s| s.cached_size / 1.0.gigabyte }),
-#      (srvs.map { |s| s.updated_at })
-#    )
-        
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option(
-            '-c',
-            '--config',
-            dest='config',
-            default=None,
-            help='Path to ttt config file.',
-        ),
         make_option(
             '--debug',
             action='store_true',
@@ -142,37 +123,30 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        warnings.filterwarnings('ignore')   # turn warnings off for MySQLdb
         args = list(args)
         CollectorRegistry.load()
-        
-        for option in self.option_list:
-            if option.dest == 'config':
-                config_option = option
-        if options.get('config') is None:
-            raise OptionError('config parameter is required.', config_option)
-        
-        config = yaml.load(open(options.get('config'), 'r'))
         
         if len(args) < 1:
             print "Need an action (try --help)."
             sys.exit(1)
             
         if options.get('backup'):
-            if config.get('ttt_connection', {}).get('adapter', '') != 'sqlite':
-                print 'Can only backup sqlite3 TTT dbs.'
+            db = settings.DATABASES.get('default', {})
+            if db.get('ENGINE') != 'django.db.backends.sqlite3':
+                print 'Can only backup sqlite3 Tableizer dbs.'
                 sys.exit(1)
             if options.get('debug'):
-                print 'Backing up TTT db..'
-            shutil.copyfile(config.get('ttt_connection', {}).get('database', ''),
-                            config.get('ttt_connection', {}).get('database', '') + '.bak')
+                print 'Backing up Tableizer db..'
+            shutil.copyfile(db.get('NAME', ''), db.get('NAME', '') + '.bak')
                             
         action = args.pop(0)
         if action == 'purge':
-            action = PurgeAction(config, options.get('debug', False), args)
+            action = PurgeAction(options.get('debug', False), args)
         elif action == 'rename':
-            action = RenameAction(config, options.get('debug', False), args)
+            action = RenameAction(options.get('debug', False), args)
         elif action == 'list':
-            action = ListAction(config, options.get('debug', False), args)
+            action = ListAction(options.get('debug', False), args)
         else:
             print 'Unknown action (try --help).'
             sys.exit(1)
