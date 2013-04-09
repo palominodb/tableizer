@@ -21,6 +21,7 @@ DATABASES = {
     },
 }
 
+# Never Alter the next two lines
 TABLEIZER_DBS = DATABASES.copy()
 TABLEIZER_DBS.pop('default')
 
