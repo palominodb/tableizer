@@ -1,6 +1,7 @@
+from django.conf import settings
+
 import MySQLdb
 
-from tableizer import settings
 from utilities.utils import get_db_key
 
 class Db(object):

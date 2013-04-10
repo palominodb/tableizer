@@ -1,6 +1,7 @@
 import re
 
-from tableizer import settings
+from django.conf import settings
+
 from ttt.formatter import Formatter
 
 class NagiosFormatter(Formatter):

@@ -2,7 +2,8 @@ import glob
 import os
 import re
 
-from tableizer import settings
+from django.conf import settings
+
 from ttt.collector import CollectorRegistry
 
 class Formatter:

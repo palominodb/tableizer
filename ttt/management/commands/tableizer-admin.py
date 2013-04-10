@@ -6,11 +6,11 @@ import warnings
 from datetime import datetime, timedelta
 from optparse import make_option, OptionError, OptionParser
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 import humanize
-import yaml
 
 from ttt.collector import CollectorRegistry
 from ttt.models import CollectorRun, Server, DatabaseTable, Snapshot

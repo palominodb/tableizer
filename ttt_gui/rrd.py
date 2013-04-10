@@ -1,8 +1,9 @@
 import os
 
+from django.conf import settings
+
 import rrdtool
 
-from tableizer import settings
 from utilities.utils import flatten, titleize, str_to_datetime, datetime_to_int
     
 class Rrdtool(object):

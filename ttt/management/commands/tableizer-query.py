@@ -2,11 +2,11 @@ import re
 import sys
 import traceback
 from datetime import datetime, timedelta
-from optparse import make_option, OptionError, OptionParser
+from optparse import make_option
 
-from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
-from tableizer import settings
 from ttt.collector import CollectorRegistry
 from ttt.formatter import Formatter
 from ttt.models import TrackingTable

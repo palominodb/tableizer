@@ -2,12 +2,12 @@ import logging
 import sys
 import traceback
 from datetime import datetime
-from optparse import make_option, OptionError
+from optparse import make_option
 
-from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from tableizer import settings
 from ttt.collector import CollectionDirector, CollectorRegistry
 from ttt.models import Snapshot
 

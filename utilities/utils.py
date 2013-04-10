@@ -3,7 +3,7 @@ import re
 import time
 from datetime import datetime, timedelta
 
-from tableizer import settings
+from django.conf import settings
 
 def flatten(l):
     for el in l:

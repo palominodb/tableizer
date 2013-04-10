@@ -3,11 +3,11 @@ import logging
 import os
 from datetime import datetime
 
+from django.conf import settings
 from django.db import connection, transaction, OperationalError, InternalError
 
 from .models import CollectorRun, DatabaseTable, Server, ServerSchema, Snapshot, \
                     Tables
-from tableizer import settings
 from utilities.utils import get_db_key
 
 logger = logging.getLogger('django.db.backends')
