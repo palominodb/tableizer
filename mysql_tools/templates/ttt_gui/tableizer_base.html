@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableizer{% endblock title %}
+
+{% block nav %}
+<ul class="nav">
+    {% include 'shared/tools_list.html' %}
+    <li class="dropdown">
+        <a href="{% url 'server_list' %}" id="drop1" role="button" class="dropdown-toggle disabled" data-toggle="dropdown">Servers <b class="caret"></b></a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+            {% for srv in server_objects %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'server_detail' srv.id %}">{{ srv.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li><a href="{% url 'database_list' %}">Databases</a></li>
+    <li><a href="{% url 'history_index' %}">History</a></li>
+    <li><a href="{% url 'all_graphs' %}">All Graphs</a></li>
+</ul>
+<ul class="nav pull-right">
+    <li>
+        <form class="navbar-search" method="GET" action="{% url 'search' %}">{% csrf_token %}
+            <input type="text" name="q" class="search-query input-medium" placeholder="Search">
+        </form>
+    </li>
+    <li>
+        <form class="navbar-search" method="GET" action="">{% csrf_token %}
+            <input type="text" name="since" class="search-query input-medium" placeholder="Since(eg. 1h, 2d, 3w, 4m)">
+        </form>
+    </li>
+    <li class="divider-vertical"></li>
+    <li>
+        <span class="navbar-text">Displaying changes since: <strong>{{ since_date|timesince }} ago</strong></span>
+    </li>
+</ul>
+{% endblock nav %}

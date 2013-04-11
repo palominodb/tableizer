@@ -1,0 +1,23 @@
+{% extends 'canonicalizer/canonicalizer_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block hero %}
+<h1>SQL Canonicalizer</h1>
+{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <h3>View top N queries:</h3>
+            {% crispy tqf tqf.helper %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <h3>View statements found in the last N minutes:</h3>
+            {% crispy lsf lsf.helper %}
+        </div>
+    </div>
+</div>
+{% endblock body %}

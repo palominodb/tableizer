@@ -1,0 +1,54 @@
+{% extends 'canonicalizer/canonicalizer_base.html' %}
+{% load canonicalizer_tags %}
+
+{% block title %}
+{{ block.super }} | Explain Results
+{% endblock %}
+
+{% block hero %}
+<h1>Explain results</h1>
+{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <p>
+                {{ expstmt.canonicalized_statement }}
+            </p>
+            <table class="table table-striped table-condensed table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Select ID</th>
+                        <th>Select Type</th>
+                        <th>Table</th>
+                        <th>Type</th>
+                        <th>Possible Keys</th>
+                        <th>Key</th>
+                        <th>Key Len</th>
+                        <th>Ref</th>
+                        <th>Rows</th>
+                        <th>Extra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in result %}
+                        <tr>
+                            <td>{{ r.select_id }}</td>
+                            <td>{{ r.select_type }}</td>
+                            <td>{{ r.table }}</td>
+                            <td>{{ r.type }}</td>
+                            <td>{{ r.possible_keys }}</td>
+                            <td>{{ r.key }}</td>
+                            <td>{{ r.key_len }}</td>
+                            <td>{{ r.ref }}</td>
+                            <td>{{ r.rows }}</td>
+                            <td>{{ r.extra }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}

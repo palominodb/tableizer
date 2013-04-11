@@ -1,0 +1,57 @@
+{% extends 'ttt_gui/tableizer_base.html' %}
+
+{% block title %}
+{{ block.super }} | Top Databases
+{% endblock title %}
+
+{% block hero %}
+    <h1>Top Databases</h1>
+{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <h5>Description:</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <ul>
+                <li>Enter in 'N', 'Pct', and 'Days' to get 'top N tables over Pct growth over Days'.</li>
+                <li>Enter in 'N', 'Gb', and 'Days' to get 'top N tables over Gb growth over Days'.</li>
+            </ul>
+            <form method="GET">{% csrf_token %}
+                {{ form.as_p }}
+                <input class="btn" type="submit" value="Update" />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Server</th>
+                        <th>Database</th>
+                        <th>{% ifequal type 'top_Pct'%}Percent Growth{% else %}GB Growth{% endifequal %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in databases %}
+                    <tr>
+                        <td>{{ t.0.0 }}</td>
+                        <td>{{ t.0.1 }}</td>
+                        <td>{% ifequal type 'top_Pct'%}{{ t.1|floatformat:"2" }}%{% else %}{{ t.1|filesizeformat }}{% endifequal %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}
+

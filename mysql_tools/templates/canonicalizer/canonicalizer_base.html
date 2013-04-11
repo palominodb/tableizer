@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+SQL Canonicalizer
+{% endblock title %}
+
+{% block extra_head %}
+{% endblock extra_head %}
+
+{% block nav %}
+<ul class="nav">
+    {% include 'shared/tools_list.html' %}
+    <li><a href="{% url 'canonicalizer_index'%}">Canonicalizer Index</a></li>
+    <li><a href="{% url 'explained_statements' %}">Explained Statements</a></li>
+    <li><a href="{% url 'top_queries' 5 %}">Top 5 Queries</a></li>
+    <li><a href="{% url 'last_statements' 5 %}">Statements Found(last 5 minutes)</a></li>
+</ul>
+{% endblock nav %}

@@ -1,0 +1,39 @@
+{% extends 'ttt_gui/tableizer_base.html' %}
+
+{% block title %}
+{{ block.super }} | Graphs
+{% endblock title %}
+
+{% block hero %}
+    <h1>All Graphs</h1>
+{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <h3>Servers:</h3>
+        </div>
+    </div>
+    {% for server in servers %}
+    <div class="row">
+        <div class="span12 text-center">
+            {% include "ttt_gui/graphs/server_full.html" %}
+        </div>
+    </div>
+    {% endfor %}
+    <div class="row">
+        <div class="span12">
+            <h3>Databases:</h3>
+        </div>
+    </div>
+    {% for database in databases %}
+    <div class="row">
+        <div class="span12 text-center">
+            {% include "ttt_gui/graphs/database_full.html" %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock body %}
+

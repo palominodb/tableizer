@@ -1,5 +1,0 @@
--e git://github.com/django/django.git@20a91cce04c72bc8c64a1c43b7398edac7b709cc#egg=Django-dev
-MySQL-python==1.2.4
-South==0.7.6
-humanize==0.3
-python-rrdtool==1.4.7

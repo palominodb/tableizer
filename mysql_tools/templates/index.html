@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block hero %}<h1>MySQL Tools</h1>{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span6">
+            <h2>Tableizer</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <p>
+                <em>This tool is a python port of the <a href="https://github.com/palominodb/PalominoDB-Public-Code-Repository/tree/master/tools/table_tracking">table-tracking-toolkit</a> gem.</em>
+            </p>
+            <p>    
+                Tableizer allows simple collecting and detailed reporting on:
+                <ul>
+                    <li>Table schema changes (tracking 'show create table' changes over time)</li>
+                    <li>Table volume-metrics (tracking table size over time)</li>
+                    <li>Table user permission changes (tracking changes on user privs)</li>
+                </ul>
+                Tableizer has a pluggable system for implementing new metrics which could be used to track other things like "SHOW STATUS".
+            </p>
+            <p>
+                Tableizer also has a pluggable reporting/querying interface which out of the box support for generating reports suitable for:
+                <ul>
+                    <li>text viewing (in the moment troubleshooting, see when it went wrong)</li>
+                    <li>email (being kept apprise of developer madness)</li>
+                    <li>nagios (being alerted of developer madness)</li>
+                    <li>rrdtool</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span6">
+            <h2>SQL Canonicalizer</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <p>
+                Sqlcanon is a tool that canonicalizes statements read from either log files, stdin or captured packets.
+            </p>
+            <p>
+                When applicable (especially when reading from log files) it also extracts additional data found and saved for reporting purposes.
+            </p>
+            <p>
+                Currently it has two parts: sqlcanonclient and sqlcanon server.  Sqlcanonclient is the one responsible for canonicalizing and extracting data. It has the option to pass data to sqlcanon server (in client-server mode) or just store them locally (stand-alone mode).
+            </p>
+            <p>
+                Current Features:
+                <ul>
+                    <li>Process MySQL slow query log</li>
+                    <li>Process MySQL general query log</li>
+                    <li>Process statements from captured packets</li>
+                    <li>Process statements from stdin</li>
+                    <li>Captured statements are stored as RRD</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock body %}

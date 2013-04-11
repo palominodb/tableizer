@@ -1,0 +1,56 @@
+{% extends 'ttt_gui/tableizer_base.html' %}
+
+{% block title %}
+{{ block.super }} | Database - {{ database.name }}
+{% endblock title %}
+
+{% block hero %}
+    <h1>Databases: {{ database.name }}</h1>
+    <h3>Current Size: {{ database.cached_size|filesizeformat }}</h3>
+{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span6">
+            <div class="btn-group">
+                <a class="btn" href="{% url 'top_tables_srv_db' database.server.id database.id %}">Top Tables</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="span12 text-center">
+            {% include "ttt_gui/graphs/database_full.html" %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <h3>Tables:</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tbl in database.databasetable_set.all %}
+                    <tr>
+                        <td><a href="{% url 'table_detail' tbl.id %}">{{ tbl.name }}</a></td>
+                        <td>{{ tbl.cached_size|filesizeformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}
+

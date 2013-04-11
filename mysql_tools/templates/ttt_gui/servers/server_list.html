@@ -1,0 +1,51 @@
+{% extends 'ttt_gui/tableizer_base.html' %}
+
+{% block title %}
+{{ block.super }} | Servers
+{% endblock title %}
+
+{% block hero %}
+    <h1>Servers</h1>
+{% endblock hero %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="span6">
+            <div class="btn-group">
+                <a class="btn" href="{% url 'top_tables' %}">Top Tables</a>
+                <a class="btn" href="{% url 'top_databases' %}">Top Databases</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <h3>Servers:</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for srv in servers %}
+                    <tr>
+                        <td><a href="{% url "server_detail" srv.id %}">{{ srv.name }}</a></td>
+                        <td>{{ srv.cached_size|filesizeformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        <div>
+    <div>
+</div>
+{% endblock body %}
+
