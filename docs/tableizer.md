@@ -203,7 +203,7 @@ In the tableizer directory, you will find two settings file; settings.py and loc
         `./manage.py tableizer-collect --list-stats`
         
     For more command options,
-        `./manage.py tableizer-collect help`
+        `./manage.py tableizer-collect --help`
 
 2. tableizer-query - This is the command for data reporting. The available output modes are:
         - text (all statistics are available)
@@ -218,7 +218,7 @@ In the tableizer directory, you will find two settings file; settings.py and loc
         `./manage.py tableizer-query --stat volume`
     
     For more command options,
-        `./manage.py tableizer-query help`
+        `./manage.py tableizer-query --help`
         
     *Note: The GUI shows graphs generated from rrds created by the tableizer-query command. For best results you should also add the tableizer-query command with output mode set to rrd to your crontab. When tested, the rrds need at least three consecutive data points to generate a useful graph.*
     
@@ -234,7 +234,7 @@ In the tableizer directory, you will find two settings file; settings.py and loc
         `./manage.py tableizer-admin purge host_name`
         
     For more command options,
-        `./manage.py tableizer-admin help`
+        `./manage.py tableizer-admin --help`
     
 ### The GUI
 

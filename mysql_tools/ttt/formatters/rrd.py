@@ -114,7 +114,7 @@ class RRDFormatter(Formatter):
                     if run > max_run:
                         continue
                     try:
-                        s = TableVolume.objects.database_sizes0(srv, sch.name)
+                        s = TableVolume.objects.database_sizes0(srv, sch.name, run)
                     except Exception, e:
                         continue
                     self.update_rrd(rrd_path, run, [s.data_length, s.index_length, 'U'])
