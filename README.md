@@ -78,7 +78,7 @@ On the otherhand, if you are using CentOS, you can follow the steps at centos/in
     
 3. Rename local_settings.py.template to local_settings.py. Configure your local_settings.py file. (See Setting section for more detailed discussion)
 
-4. You will also need an sql user to do the data collection. It is Highly recommended that you make a user just for tableizer, for both security and accountability purposes. MySQL Tools needs 'select', and 'show view' priviliges. The below query give the 'mysql_tools' user the appropriate permissions.
+4. You will also need an sql user to do the data collection. It is Highly recommended that you make a user just for MySQL Tools, for both security and accountability purposes. MySQL Tools needs 'select', and 'show view' priviliges. The below query give the 'mysql_tools' user the appropriate permissions.
 
         GRANT SELECT, SHOW VIEW ON *.* TO 'mysql_tools'@'ops.example.com' IDENTIFIED BY 'password';
 
@@ -128,7 +128,7 @@ In the mysql_tools directory, you will find two settings file; settings.py and l
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-                'NAME': 'tableizer',                      # Or path to database file if using sqlite3.
+                'NAME': 'mysql_tools',                      # Or path to database file if using sqlite3.
                 'USER': 'user',                      # Not used with sqlite3.
                 'PASSWORD': 'password',                  # Not used with sqlite3.
                 'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
