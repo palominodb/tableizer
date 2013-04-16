@@ -1,11 +1,11 @@
-# Django settings for tableizer project.
+# Django settings for mysql_tools project.
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'tableizer',                      # Or path to database file if using sqlite3.
+        'NAME': 'mysql_tools',                      # Or path to database file if using sqlite3.
         'USER': 'user',                      # Not used with sqlite3.
         'PASSWORD': 'password',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -115,7 +115,7 @@ FORMATTER_OPTIONS = {
     # Emailing one-time reports should probably be done by using the
     # 'text' formatter, and piping the output to the `mail` command.
     'email': {
-        'subjectprefix': '[Tableizer] ',
+        'subjectprefix': '[MySQL Tools] ',
         'emailto': 'email@email.com',
         # Whether or not to send emails with no changes.
         'send_empty': False,
