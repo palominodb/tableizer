@@ -81,7 +81,7 @@ class EmailFormatter(Formatter):
         else:
             raise Exception, 'Unable to handle this record type: %s' % (rows[0].__class__)
             
-        subj_prefix = '[Tableizer]'
+        subj_prefix = '[MySQL Tools]'
         if 'subjectprefix' in formatter_options.get('email', {}).keys():
             subj_prefix = formatter_options.get('email', {}).get('subjectprefix')
         
