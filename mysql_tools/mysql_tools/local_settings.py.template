@@ -119,6 +119,9 @@ FORMATTER_OPTIONS = {
         'emailto': 'email@email.com',
         # Whether or not to send emails with no changes.
         'send_empty': False,
+        # Add links to the gui
+        'include_links': False,
+        'gui_url': 'http://localhost:8000',
         # This can be 'sendmail' or 'smtp'
         # Defaults to 'sendmail'
         'delivery_method': 'smtp',

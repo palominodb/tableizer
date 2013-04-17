@@ -6,35 +6,31 @@ class EmailFormatter(Formatter):
     
     def format_defn(self, stream, rows, *args):
         import time
-        link_type = 'false'
-        link_url = None
+        from django.core.urlresolvers import reverse
+        from django.db.models import get_model
+        DatabaseTable = get_model('ttt', 'DatabaseTable')
+        link_url = ''
         # If include_links is set, then we'll need the gui_url.
-        # link_type should be one of 'true', 'false', or 'html'
-        # Anything else is treated as 'true'
-        link_type = self.want_option('include_links', 'false')
-        if link_type == 'true':
+        include_links = self.want_option('include_links', False)
+        if include_links:
             link_url = self.need_option('gui_url')
+            if link_url.endswith('/'):
+                link_url = link_url[:-1]
         last_run = None
         for r in rows:
+            tbl = DatabaseTable.objects.get(name=r.table_name, schema__name=r.database_name, schema__server__name=r.server)
+            relative_url = reverse('table_detail', kwargs={'id':tbl.id})
             if last_run != r.run_time:
                 stream.write('--- %s\n' % (str(r.run_time)))
                 last_run = r.run_time
-            if link_type == 'text':
-                stream.write('{0}\t{1}.{2}.{3}\t<#{4}/servers/{1}/databases/{2}/tables/{3}?show_diff=true&at={5}\n'.format(
+            if include_links:
+                stream.write('{0}\t{1}.{2}.{3}\t({4}{5}?show_diff=true&at={6})\n'.format(
                     r.status,
                     r.server,
                     r.database_name,
                     r.table_name,
                     link_url,
-                    int(time.mktime(r.run_time.timetuple())),
-                ))
-            elif link_type == 'html':
-                stream.write('{0}\t<a href="{1}/servers/{2}/databases/{3}/tables{4}?show_diff=true&at={5}">{2}.{3}.{4}</a>\n'.format(
-                    r.status,
-                    link_url,
-                    r.server,
-                    r.database_name,
-                    r.table_name,
+                    relative_url,
                     int(time.mktime(r.run_time.timetuple())),
                 ))
             else:
@@ -48,6 +44,15 @@ class EmailFormatter(Formatter):
                 stream.write('{0:15}         {1:15}\n'.format('host', 'grant'))
                 last_run = r.run_time
             stream.write('{0:15}         {1:15}\n'.format(r.server, r))
+            
+    def format_volume(self, stream, rows, *args):
+        last_run = None
+        for r in rows:
+            if last_run != r.run_time:
+                stream.write('--- %s\n' % (str(r.run_time)))
+                last_run = r.run_time
+            stream.write('{0}\t{1}.{2}.{3}\t{4}mb\n'.format(r.status, str(r.server), str(r.database_name), str(r.table_name), 
+                            (r.data_length + r.index_length)/1024/1024 if r.data_length is not None and r.index_length is not None else ''))
     
     def format(self, rows, *args):
         import StringIO
@@ -56,6 +61,7 @@ class EmailFormatter(Formatter):
         TableDefinition = get_model('ttt', 'TableDefinition')
         TableView = get_model('ttt', 'TableView')
         TableUser = get_model('ttt', 'TableUser')
+        TableVolume = get_model('ttt', 'TableVolume')
         formatter_options = settings.FORMATTER_OPTIONS
         stream = self.stream
         args = list(args)
@@ -78,6 +84,8 @@ class EmailFormatter(Formatter):
             self.format_defn(tstream, rows, args)
         elif rows[0].__class__ == TableUser:
             self.format_user(tstream, rows, args)
+        elif rows[0].__class__ == TableVolume:
+            self.format_volume(tstream, rows, args)
         else:
             raise Exception, 'Unable to handle this record type: %s' % (rows[0].__class__)
             

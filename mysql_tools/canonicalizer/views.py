@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import json
 import logging
 import pprint
 import urllib
@@ -10,7 +11,7 @@ from django.db.models import Max, Count, Sum, Avg
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
-from django.utils import timezone, simplejson
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 import canonicalizer.forms as app_forms
@@ -43,10 +44,10 @@ def save_explained_statement(request):
     """Saves explain data."""
 
     def post_vars(post):
-        data = simplejson.loads(post.get('data'))
+        data = json.loads(post.get('data'))
 
         statement_data_id = int(data.get('statement_data_id'))
-        explain_rows = simplejson.loads(data.get('explain_rows'))
+        explain_rows = json.loads(data.get('explain_rows'))
         db = data.get('db')
         server_id = int(data.get('server_id'))
 
@@ -65,10 +66,10 @@ def save_explained_statement(request):
             explained_statement = app_funcs.save_explained_statement(
                 **post_vars_packed)
 
-        ret = simplejson.dumps(rv)
+        ret = json.dumps(rv)
     except Exception, e:
         LOGGER.exception(u'{0}'.format(e))
-        ret = simplejson.dumps(dict(error=u'{0}'.format(e)))
+        ret = json.dumps(dict(error=u'{0}'.format(e)))
     return HttpResponse(ret, mimetype='application/json')
 
 
@@ -81,7 +82,7 @@ def save_statement_data(request):
 
         post_data = post.get('data')
         try:
-            data = simplejson.loads(post_data)
+            data = json.loads(post_data)
         except:
             LOGGER.error(u'Could not successfully convert the following data to JSON object: {0}'.format(post_data))
             return None
@@ -194,10 +195,10 @@ def save_statement_data(request):
                         explain_data['schema'] = post_vars['schema'].strip()
                     explain.append(explain_data)
 
-        ret = simplejson.dumps(dict(explain=explain))
+        ret = json.dumps(dict(explain=explain))
     except Exception, e:
         LOGGER.exception(u'{0}'.format(e))
-        ret = simplejson.dumps(dict(error=u'{0}'.format(e)))
+        ret = json.dumps(dict(error=u'{0}'.format(e)))
     return HttpResponse(ret, mimetype='application/json')
 
 
