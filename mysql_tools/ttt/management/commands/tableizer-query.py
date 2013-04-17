@@ -152,6 +152,7 @@ class Command(BaseCommand):
                 
         output_cfg['full'] = options.get('output_full')
         output_cfg['raw'] = options.get('output_raw')
+        output_cfg['display_width'] = options.get('output_width')
         
         output = Formatter.get_runner_for(options.get('output'))(sys.stderr)
         

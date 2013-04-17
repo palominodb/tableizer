@@ -68,7 +68,7 @@ SEND_CRASHREPORTS = True
 # full is just like the command-line flag, which causes
 # more detailed output.
 REPORT_OPTIONS = {
-    'display_with': 135,
+    'display_width': 135,
     'full': False,
 }
 
