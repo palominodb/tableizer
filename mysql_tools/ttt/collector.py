@@ -183,9 +183,8 @@ class CollectionDirector(object):
                                                                     table_name=tbl.table_name)
                         else:
                             logger.info("[exclude tables]: %s" % (server_schema_table))
-                        self.cached_tables = return_tbls
+                    self.cached_tables = return_tbls
             except Exception, e:
-                print e
                 self.cached_tables = tbls
       
     def collect(self, host, collector):
