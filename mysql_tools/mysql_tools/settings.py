@@ -238,7 +238,7 @@ except NameError:
                 },
             'django.db.backends': {
                 'handlers': ['tableizer_console'],
-                'propagate': True,
+                'propagate': False,
                 'level': 'INFO',
             },
         }

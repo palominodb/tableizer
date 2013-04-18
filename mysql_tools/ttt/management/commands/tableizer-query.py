@@ -175,7 +175,10 @@ class Command(BaseCommand):
             
             # Do reject_ignores filter before limit
             if not output_cfg.get('raw', False):
-                query = output.reject_ignores(query)
+                if settings.USE_INCLUDE_NOT_IGNORE:
+                    query = output.report_include(query)
+                else:
+                    query = output.reject_ignores(query)
             if sql_conditions.get('limit') is not None:
                 query = query[:sql_conditions.get('limit')]
             output.format(query, output_cfg)

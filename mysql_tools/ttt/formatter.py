@@ -36,18 +36,45 @@ class Formatter:
             do_rej = False
             if report_ignore.get(r.collector) is not None:
                 for reg in report_ignore.get(r.collector, []):
-                    re_match = re.search(reg, server_schema_table)
+                    re_match = re.match(reg, server_schema_table)
                     if re_match is not None:
                         do_rej = True
                         break
             if not do_rej:
                 if report_ignore.get('global') is not None:
                     for reg in report_ignore.get('global', []):
-                        re_match = re.search(reg, server_schema_table)
+                        re_match = re.match(reg, server_schema_table)
                         if re_match is not None:
                             do_rej = True
                             break
             if not do_rej:
+                return_rows.append(r)
+        return return_rows
+        
+    def report_include(self, rows):
+        try:
+            report_include = settings.REPORT_INCLUDE
+        except Exception, e:
+            return rows
+        return_rows = []
+        for r in rows:
+            server_schema_table = '.'.join([r.server if r.server is not None else '', r.database_name if r.database_name is not None else '', 
+                                            r.table_name if r.table_name is not None else ''])
+            do_inc = False
+            if report_include.get(r.collector) is not None:
+                for reg in report_include.get(r.collector, []):
+                    re_match = re.match(reg, server_schema_table)
+                    if re_match is not None:
+                        do_inc = True
+                        break
+            if not do_inc:
+                if report_include.get('global') is not None:
+                    for reg in report_include.get('global', []):
+                        re_match = re.match(reg, server_schema_table)
+                        if re_match is not None:
+                            do_inc = True
+                            break
+            if do_inc:
                 return_rows.append(r)
         return return_rows
       

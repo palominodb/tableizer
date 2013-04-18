@@ -26,7 +26,10 @@ TABLEIZER_DBS = DATABASES.copy()
 TABLEIZER_DBS.pop('default')
 
 # Tableizer Settings(from config.yml)
-# A list of regexes to ignore during reporting
+# Use REPORT_INCLUDE instead of REPORT_IGNORE
+USE_INCLUDE_NOT_IGNORE = False
+
+# A list of regexes to ignore during collecting and reporting
 # During reporting, each one of these regexes is tested against
 # a string composed like: 'server'.'database'.'table'
 # for each potential record.
@@ -51,7 +54,36 @@ TABLEIZER_DBS.pop('default')
 # }
 REPORT_IGNORE = {
     'global': (
-        'mysql\..*',
+        'localhost\.mysql\..*',
+    ),
+}
+
+# A list of regexes to include during collecting and reporting
+# During reporting, each one of these regexes is tested against
+# a string composed like: 'server'.'database'.'table'
+# for each potential record.
+# E.g.,
+#   You've got a server: testdb1
+#   And the table: mysql
+#   The second regex below would match every table under 'mysql'
+#   and only on 'testdb1'.
+#   Including the server that will match against any server, basically.
+# Reporting includes work on a per-statistic basis, except the
+# ones in the global category.
+# See `tableizer-query --list-stats` for a list of available statistics.
+#
+# REPORT_INCLUDE = {
+#    'global': (
+#       'bucket_.*',
+#       '^testdb1\.mysql\..*',
+#    ),
+#    'volume': (
+#       'nogrowthdb\..*',
+#    ),
+# }
+REPORT_INCLUDE = {
+    'global': (
+        'localhost\.mysql\..*',
     ),
 }
 

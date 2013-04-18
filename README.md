@@ -144,7 +144,7 @@ In the mysql_tools directory, you will find two settings file; settings.py and l
             },
         }
 
-2. REPORT_IGNORE - This is a list of regexes to ignore during reporting
+2. REPORT_IGNORE - This is a list of regexes to ignore during collecting and reporting
     
         REPORT_IGNORE = {
             'global': (
@@ -155,16 +155,31 @@ In the mysql_tools directory, you will find two settings file; settings.py and l
             ),
         }
 
-3. SEND_CRASHREPORTS - Send Crash Reports to PalominoDB. (To-do)
+3. REPORT_INCLUDE - This is a list of regexes to include during collecting and reporting
+        
+        REPORT_INCLUDE = {
+            'global': (
+                'mysql\..*',
+            ),
+            'volume': (
+                'nogrowthdb\..*',
+            ),
+        }
 
-4. REPORT_OPTIONS - Options for reporting when using text output
+4. USE_INCLUDE_NOT_IGNORE - This is a boolean value on whether to use REPORT_INCLUDE rather than to use REPORT_IGNORE.
+    
+        USE_INCLUDE_NOT_IGNORE = False
+
+5. SEND_CRASHREPORTS - Send Crash Reports to PalominoDB. (To-do)
+
+6. REPORT_OPTIONS - Options for reporting when using text output
         
         REPORT_OPTIONS = {
             'display_with': 135,
             'full': False,
         }
 
-5. FORMATTER_OPTIONS - Output formatting options
+7. FORMATTER_OPTIONS - Output formatting options
     
         
         FORMATTER_OPTIONS = {

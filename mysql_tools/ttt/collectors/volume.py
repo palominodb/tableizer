@@ -47,7 +47,7 @@ def action(rd):
         if g is None and not rd.stat.objects.deleted(t):
             tbl = rd.stat(
                 server=rd.host,
-                database_name=t.table_schema,
+                database_name=t.database_name,
                 table_name=t.table_name,
                 run_time=rd.run_time,
                 data_length=None,

@@ -1,6 +1,7 @@
 import glob
 import logging
 import os
+import re
 from datetime import datetime
 
 from django.conf import settings
@@ -125,11 +126,67 @@ class CollectionDirector(object):
         self.cached_tables = None
         CollectorRegistry.load() # Make sure collectors are loaded.
             
-    def recache_tables(self):
+    def recache_tables(self, collector):
         host = self.host
         k = get_db_key(host)
         if k is not None:
-            self.cached_tables = Tables.objects.using(k).all()
+            tbls = Tables.objects.using(k).all()
+            try:
+                if settings.USE_INCLUDE_NOT_IGNORE:
+                    report_include = settings.REPORT_INCLUDE
+                    return_tbls = Tables.objects.using(k).none()
+                    for tbl in tbls:
+                        server_schema_table = '.'.join([host if host is not None else '', tbl.table_schema if tbl.table_schema is not None else '', 
+                                            tbl.table_name if tbl.table_name is not None else ''])
+                        do_inc = False
+                        if report_include.get(collector.stat) is not None:
+                            for reg in report_include.get(collector.stat, []):
+                                re_match = re.match(reg, server_schema_table)
+                                if re_match is not None:
+                                    do_inc = True
+                                    break
+                        if not do_inc:
+                            if report_include.get('global') is not None:
+                                for reg in report_include.get('global', []):
+                                    re_match = re.match(reg, server_schema_table)
+                                    if re_match is not None:
+                                        do_inc = True
+                                        break
+                        if do_inc:
+                            return_tbls = return_tbls | tbls.filter(table_schema=tbl.table_schema,
+                                                                    table_name=tbl.table_name)
+                        else:
+                            logger.info("[exclude tables]: %s" % (server_schema_table))
+                    self.cached_tables = return_tbls
+                else:
+                    report_ignore = settings.REPORT_IGNORE
+                    return_tbls = Tables.objects.using(k).none()
+                    for tbl in tbls:
+                        server_schema_table = '.'.join([host if host is not None else '', tbl.table_schema if tbl.table_schema is not None else '', 
+                                            tbl.table_name if tbl.table_name is not None else ''])
+                        do_rej = False
+                        if report_ignore.get(collector.stat) is not None:
+                            for reg in report_ignore.get(collector.stat, []):
+                                re_match = re.match(reg, server_schema_table)
+                                if re_match is not None:
+                                    do_rej = True
+                                    break
+                        if not do_rej:
+                            if report_ignore.get('global') is not None:
+                                for reg in report_ignore.get('global', []):
+                                    re_match = re.match(reg, server_schema_table)
+                                    if re_match is not None:
+                                        do_rej = True
+                                        break
+                        if not do_rej:
+                            return_tbls = return_tbls | tbls.filter(table_schema=tbl.table_schema,
+                                                                    table_name=tbl.table_name)
+                        else:
+                            logger.info("[exclude tables]: %s" % (server_schema_table))
+                        self.cached_tables = return_tbls
+            except Exception, e:
+                print e
+                self.cached_tables = tbls
       
     def collect(self, host, collector):
         with transaction.commit_on_success():
@@ -138,7 +195,7 @@ class CollectionDirector(object):
                 self.host = host
                 try:
                     logger.info("[cache tables]: %s - %s" % (host, collector.stat))
-                    self.recache_tables()
+                    self.recache_tables(collector)
                     
                     srv = Server.objects.get_or_create(name=host)[0]
                     srv.save()
