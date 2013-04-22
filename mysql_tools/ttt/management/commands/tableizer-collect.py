@@ -81,4 +81,5 @@ class Command(BaseCommand):
                                 i.save(txn_id)
         except Exception, e:
             tb = traceback.format_exc()
-            print tb
+            logger = logging.getLogger('tableizer')
+            logger.error(tb)

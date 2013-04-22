@@ -2,6 +2,9 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+# Email to be used for sending crash reports to PDB
+SERVER_EMAIL = ''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.

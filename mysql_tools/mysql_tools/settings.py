@@ -16,6 +16,10 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+PDB_ADMINS = (
+    ('Rod Xavier Bondoc', 'RXavier@palominodb.com'),
+)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -177,6 +181,11 @@ SITE_LOGGERS = {
         'level': 'DEBUG',
         'propagate': True
     },
+    'tableizer': {
+        'handlers': ['tableizer_crash',],
+        'level': 'ERROR',
+        'propagate': True
+    }
 }
 
 CAPTURED_STATEMENT_ROW_LIMIT = 1024
@@ -225,10 +234,13 @@ except NameError:
                 'filename': SITE_LOG_FILENAME,
                 'mode': 'a+',
             },
-                'tableizer_console':{
+            'tableizer_console':{
                 'class':'logging.StreamHandler',
                 'stream': sys.stdout
             },
+            'tableizer_crash':{
+                'class': 'ttt_email.log.CrashHandler',
+            }
         },
         'loggers': {
             'django.request': {

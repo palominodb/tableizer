@@ -1,3 +1,4 @@
+import logging
 import re
 import shutil
 import sys
@@ -155,6 +156,7 @@ class Command(BaseCommand):
             ecode = action.execute()
         except Exception, e:
             tb = traceback.format_exc()
-            print tb
+            logger = logging.getLogger('tableizer')
+            logger.error(tb)
             sys.exit(1)
         sys.exit(ecode)

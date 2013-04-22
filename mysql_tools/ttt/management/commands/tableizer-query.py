@@ -1,3 +1,4 @@
+import logging
 import re
 import sys
 import traceback
@@ -184,4 +185,5 @@ class Command(BaseCommand):
             output.format(query, output_cfg)
         except Exception, e:
             tb = traceback.format_exc()
-            print tb
+            logger = logging.getLogger('tableizer')
+            logger.error(tb)
