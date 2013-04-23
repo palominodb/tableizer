@@ -106,6 +106,7 @@ class Command(BaseCommand):
         output_cfg = {}
         sql_conditions = {}
         find_type = 'normal'
+        code = 0
     
         CollectorRegistry.load()
         if options.get('list_stats'):
@@ -182,8 +183,9 @@ class Command(BaseCommand):
                     query = output.reject_ignores(query)
             if sql_conditions.get('limit') is not None:
                 query = query[:sql_conditions.get('limit')]
-            output.format(query, output_cfg)
+            code = output.format(query, output_cfg)
         except Exception, e:
             tb = traceback.format_exc()
             logger = logging.getLogger('tableizer')
             logger.error(tb)
+        sys.exit(code)

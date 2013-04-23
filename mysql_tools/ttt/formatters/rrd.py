@@ -145,6 +145,6 @@ class RRDFormatter(Formatter):
                     if s.data_free is None:
                         s.data_free = 0
                     self.update_rrd(rrd_path, run, [s.data_length, s.index_length, s.data_free])          
-        return True
+        return 0
 
 RRDFormatter.runner_for('rrd')

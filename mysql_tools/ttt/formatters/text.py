@@ -23,6 +23,6 @@ class TextFormatter(Formatter):
             formatter = self.get_formatter_for(row.collector)
             if formatter is not None:
                 formatter(stream, row, options)
-        return True
+        return 0
 
 TextFormatter.runner_for('text')

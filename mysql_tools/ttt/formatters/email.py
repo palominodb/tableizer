@@ -68,7 +68,7 @@ class EmailFormatter(Formatter):
         options = self.__extract_options__(args)
         if 'email' not in formatter_options.keys():
             stream.write('[error]: Need email formatter options set to send email!\n')
-            return False
+            return 0
             
         changes=0
         for row in rows:
@@ -77,7 +77,7 @@ class EmailFormatter(Formatter):
                 
         if 'send_empty' in formatter_options.get('email', {}).keys():
             if not formatter_options.get('email', {}).get('send_empty', False) and changes == 0:
-                return True
+                return 0
                 
         tstream = StringIO.StringIO()
         if rows[0].__class__ in [TableDefinition, TableView]:
@@ -95,7 +95,7 @@ class EmailFormatter(Formatter):
         
         if 'emailto' not in formatter_options.get('email', {}).keys():
             tstream.write('[error]: Need \'formatter_options.email.emailto\' to send mail!\n')
-            return False
+            return 0
             
         delivery_method = formatter_options.get('email', {}).get('delivery_method', 'sendmail')
         if delivery_method == 'sendmail':
@@ -116,7 +116,7 @@ class EmailFormatter(Formatter):
             connection.password = password
             connection.use_tls = use_tls
         else:
-            return False
+            return 0
         
         connection.open()
         to_email = formatter_options.get('email', {}).get('emailto', '')
@@ -128,6 +128,6 @@ class EmailFormatter(Formatter):
         
         connection.close()
         
-        return True
+        return 0
     
 EmailFormatter.runner_for('email')
