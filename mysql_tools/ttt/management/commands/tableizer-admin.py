@@ -171,7 +171,6 @@ class Command(BaseCommand):
             sys.exit(1)
           
         try:
-            a
             ecode = action.execute()
         except Exception, e:
             if settings.SEND_CRASHREPORTS:
