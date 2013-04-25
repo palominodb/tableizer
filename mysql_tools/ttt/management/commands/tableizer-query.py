@@ -203,7 +203,8 @@ class Command(BaseCommand):
                 query = query[:sql_conditions.get('limit')]
             code = output.format(query, output_cfg)
         except Exception, e:
-            tb = traceback.format_exc()
-            logger = logging.getLogger('tableizer')
-            logger.error(tb)
+            if settings.SEND_CRASHREPORTS:
+                tb = traceback.format_exc()
+                logger = logging.getLogger('tableizer')
+                logger.error(tb)
         sys.exit(code)

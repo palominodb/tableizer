@@ -98,6 +98,7 @@ class Command(BaseCommand):
                             for i in v:
                                 i.save(txn_id)
         except Exception, e:
-            tb = traceback.format_exc()
-            logger = logging.getLogger('tableizer')
-            logger.error(tb)
+            if settings.SEND_CRASHREPORTS:
+                tb = traceback.format_exc()
+                logger = logging.getLogger('tableizer')
+                logger.error(tb)
