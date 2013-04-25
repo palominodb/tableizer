@@ -36,18 +36,18 @@ You may need to install Python2.7 if you're CentOS ships a different version.
 ## Install Setuptools and Pip
 
     cd ~
-    wget http://pypi.python.org/packages/source/d/distribute/ditstribute-0.6.36.tar.gz
+    wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.36.tar.gz
     tar xf distribute-0.6.36.tar.gz
 	cd distribute-0.6.36
 	python2.7 setup.py install
 
-	easy_install pip
+	easy_install-2.7 pip
     
 ## Virtualenv and Virtualenvwrapper
 
-    pip install virtualenv
-    pip install virtualenvwrapper
-
+    pip-2.7 install virtualenv
+    pip-2.7 install virtualenvwrapper
+    
 #### Edit your .bashrc file and add the following lines
 
     export WORKON_HOME=$HOME/.virtualenvs

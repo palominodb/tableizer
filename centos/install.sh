@@ -72,16 +72,16 @@ make && make altinstall
 
 # Install Setuptools and Pip
 cd ~
-wget http://pypi.python.org/packages/source/d/distribute/ditstribute-0.6.36.tar.gz
+wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.36.tar.gz
 tar xf distribute-0.6.36.tar.gz
 cd distribute-0.6.36
 python2.7 setup.py install
 
-easy_install pip
+easy_install-2.7 pip
 
 # Install virtualenv and virtualenvwrapper
-pip install virtualenv
-pip install virtualenvwrapper
+pip-2.7 install virtualenv
+pip-2.7 install virtualenvwrapper
 
 # Edit .bashrc file
 if ! grep -F 'export WORKON_HOME=\$HOME/.virtualenvs' ~/.bashrc
