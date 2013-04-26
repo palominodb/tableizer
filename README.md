@@ -52,8 +52,14 @@ Requirements:
 - Rrdtool
 - Libpcap
 
-If you are using Debian, you can follow the steps at debian/installation.md. Moreover, you can execute debian/install.sh to automate installations.
-On the otherhand, if you are using CentOS, you can follow the steps at centos/installation.md. Moreover, you can execute centos/install.sh to automate installations.
+Debian
+- follow the steps at debian/installation.md or execute debian/install.sh
+
+CentOS
+- follow the steps at centos/installation.md or execute centos/install.sh
+
+Amazon Linux
+- follow the steps at amazon_linux/installtion.md or execute amazon_linux/install.sh
 
 ### install.sh
     usage: ./install.sh options
