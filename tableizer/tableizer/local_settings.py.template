@@ -1,0 +1,193 @@
+# local_settings.py
+# Copyright (C) 2009-2013 PalominoDB, Inc.
+# 
+# You may contact the maintainers at eng@palominodb.com.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Django settings for mysql_tools project.
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+# Email to be used for sending crash reports to PDB
+SERVER_EMAIL = ''
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'mysql_tools',                      # Or path to database file if using sqlite3.
+        'USER': 'user',                      # Not used with sqlite3.
+        'PASSWORD': 'password',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    },
+    'localhost_information_schema': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'information_schema',                      # Or path to database file if using sqlite3.
+        'USER': 'user',                      # Not used with sqlite3.
+        'PASSWORD': 'password',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    },
+}
+
+# Never Alter the next two lines
+TABLEIZER_DBS = DATABASES.copy()
+TABLEIZER_DBS.pop('default')
+
+# Tableizer Settings(from config.yml)
+# Use REPORT_INCLUDE instead of REPORT_IGNORE
+USE_INCLUDE_NOT_IGNORE = False
+
+# A list of regexes to ignore during collecting and reporting
+# During reporting, each one of these regexes is tested against
+# a string composed like: 'server'.'database'.'table'
+# for each potential record.
+# E.g.,
+#   You've got a server: testdb1
+#   And the table: mysql
+#   The second regex below would match every table under 'mysql'
+#   and only on 'testdb1'.
+#   Leaving off the server will match against any server, basically.
+# Reporting ignores work on a per-statistic basis, except the
+# ones in the global category.
+# See `tableizer-query --list-stats` for a list of available statistics.
+#
+# REPORT_IGNORE = {
+#    'global': (
+#       'bucket_.*',
+#       '^testdb1\.mysql\..*',
+#    ),
+#    'volume': (
+#       'nogrowthdb\..*',
+#    ),
+# }
+REPORT_IGNORE = {
+    'global': (
+        'localhost\.mysql\..*',
+    ),
+}
+
+# A list of regexes to include during collecting and reporting
+# During reporting, each one of these regexes is tested against
+# a string composed like: 'server'.'database'.'table'
+# for each potential record.
+# E.g.,
+#   You've got a server: testdb1
+#   And the table: mysql
+#   The second regex below would match every table under 'mysql'
+#   and only on 'testdb1'.
+#   Including the server that will match against any server, basically.
+# Reporting includes work on a per-statistic basis, except the
+# ones in the global category.
+# See `tableizer-query --list-stats` for a list of available statistics.
+#
+# REPORT_INCLUDE = {
+#    'global': (
+#       'bucket_.*',
+#       '^testdb1\.mysql\..*',
+#    ),
+#    'volume': (
+#       'nogrowthdb\..*',
+#    ),
+# }
+REPORT_INCLUDE = {
+    'global': (
+        'localhost\.mysql\..*',
+    ),
+}
+
+## If, for some reason, you don't want PalominoDB to be
+## emailed with crashreports for Tableizer, then change this
+## to false. The default is true, so commenting it out
+## won't do what you want.
+SEND_CRASHREPORTS = True
+
+# display_width will force a pre-defined display width,
+# instead of relying on the automatic detection which can be wrong
+# occassionally. But, only when Curses would get it wrong.
+#
+# full is just like the command-line flag, which causes
+# more detailed output.
+REPORT_OPTIONS = {
+    'display_width': 135,
+    'full': False,
+}
+
+FORMATTER_OPTIONS = {
+    # This formatter exports to RRD.
+    # Presently, it IGNORES all query options, and simply
+    # updates RRD in a fixed format. This may be changed at a later time.
+    # The RRD formatter also does not store create syntax changes right now
+    # Extending it to do so should be trival, but seemed less important than
+    # volumetrics for the first release.
+    # The 'path' option specifies where to write out RRDs.
+    # It should be an absolute path.
+    # RRD is sensitive to time, if you are going to export to RRD
+    # you must be prepared to run the RRD export on a regular basis.
+    # If you are just simply looking to generate some "one-time" graphs,
+    # The RRD exporter DOES insert old entries, so you can simple run it,
+    # and do whatever graph creation you want.
+    'rrd': {
+        'path': '/tmp/rrd',
+        # This is needed so RRD knows "how often" you'll be feeding results to it.
+        # This is only used during RRD creation time, after that, if you wait
+        # longer to update the rrd, this formatter will fill in all intervening
+        # entries. Additionally, if you change this after RRDs have been created,
+        # only new rrds will pickup the change.
+        # Syntax is: X[hmd], where 'h' is hours, 'm' is minutes, and 'd' is days
+        # There is a maximum of two days for any interval.
+        'update_interval': '10m',
+    },
+    'nagios': {
+        # One of 'critical', 'warning', 'unknown', 'ok'
+        # Defines how the formatter should treat
+        # changes to the monitored tables
+        # The default level is 'warning'
+        'alert_level': 'warning',
+        # Table regexes to alert on. This is an inclusion mechanism
+        # as opposed to an exclusion mechanism. Tables that you wish
+        # to recieve nagios alerts for must be included by one of your regexes.
+        # It's recommended to make these as specific as reasonable.
+        'tables':(
+            '.*',
+        )
+    },
+    # This formatter is designed for emailing periodic reports.
+    # Emailing one-time reports should probably be done by using the
+    # 'text' formatter, and piping the output to the `mail` command.
+    'email': {
+        'subjectprefix': '[Tableizer] ',
+        'emailto': 'email@email.com',
+        # Whether or not to send emails with no changes.
+        'send_empty': False,
+        # Add links to the gui
+        'include_links': False,
+        'gui_url': 'http://localhost:8000',
+        # This can be 'sendmail' or 'smtp'
+        # Defaults to 'sendmail'
+        'delivery_method': 'smtp',
+        'sendmail_settings': {
+            'location': '/usr/sbin/sendmail'
+        },
+        'smtp_settings': {
+            'host': 'smtp.gmail.com',
+            'port': 587,
+            'user': 'email@email.com',
+            'password': 'password',
+            'use_tls': True,
+        },
+    }
+}

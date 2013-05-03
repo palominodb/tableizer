@@ -83,7 +83,3 @@ For CentOS 6,
 
     yum install cairo-devel libxml2-devel pango-devel libpng-devel freetype-devel libart_lgpl-devel
 
-## Install libpcap
-
-    yum install libpcap libpcap-devel
-

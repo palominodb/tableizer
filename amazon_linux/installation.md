@@ -69,8 +69,3 @@ You may need to install Python2.7 if you're Amazon Linux ships a different versi
 #### Rrdtool-python requirements
 
     yum install cairo-devel libxml2-devel pango-devel libpng-devel freetype freetype-devel libart_lgpl-devel
-
-## Install libpcap
-
-    yum install libpcap libpcap-devel
-

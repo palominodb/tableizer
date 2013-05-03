@@ -5,7 +5,7 @@ usage()
 cat << EOF
 usage: $0 options
 
-This installs the requirements needed for MySQL Tools.
+This installs the requirements needed for Tableizer.
 
 OPTIONS:
    -h               Show this message
@@ -126,7 +126,4 @@ fi
 
 # Install Rrdtool-python requirements
 yum install cairo-devel libxml2-devel pango-devel libpng-devel freetype-devel libart_lgpl-devel
-
-# Install libpcap
-yum install libpcap libpcap-devel
 

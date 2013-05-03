@@ -84,7 +84,3 @@ If the above command don't work, try
 #### Rrdtool-python requirements
 
     apt-get install libcairo2-dev libpango1.0-dev libglib2.0-dev libxml2-dev librrd-dev
-
-## Install libpcap
-
-    apt-get install libpcap0.8 libpcap-dev
