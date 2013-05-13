@@ -172,11 +172,13 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     
     'south',
+    'rest_framework',
     
     #==============
     # project apps
     #==============
     'ttt',
+    'ttt_api',
     'ttt_gui',
 )
 
@@ -193,6 +195,15 @@ SITE_LOGGERS = {
         'level': 'ERROR',
         'propagate': True
     }
+}
+
+#Django-rest-framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.XMLRenderer',
+    )
 }
 
 LOGGING = {

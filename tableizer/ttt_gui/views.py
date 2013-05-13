@@ -180,12 +180,12 @@ class TopDatabasesView(TemplateView):
                         self.raw_tables[(min_tbl.server, min_tbl.database_name)] = 0.0
                     if min_tbl.size != 0:
                         self.raw_tables[(min_tbl.server, min_tbl.database_name)] += (max_tbl.size+0.0-min_tbl.size+0.0)/min_tbl.size+0.0
-                    raw_array = [[k, v] for k,v in self.raw_tables.items()]
-                    raw_array = filter(lambda x: x[1] > percent, raw_array)
-                    raw_array.sort(key=lambda x: -x[1])
-                    if lim is not None:
-                        raw_array = raw_array[:lim]
-                    context['databases'] = raw_array
+                raw_array = [[k, v] for k,v in self.raw_tables.items()]
+                raw_array = filter(lambda x: x[1] > percent, raw_array)
+                raw_array.sort(key=lambda x: -x[1])
+                if lim is not None:
+                    raw_array = raw_array[:lim]
+                context['databases'] = raw_array
             elif not math.isnan(gbytes):
                 context['type'] = 'top_GB'
                 min_maxes = TableVolume.objects.exclude(database_name=None, 
@@ -198,13 +198,13 @@ class TopDatabasesView(TemplateView):
                         continue
                     if [min_tbl.server, min_tbl.database_name] not in self.raw_tables.keys():
                         self.raw_tables[(min_tbl.server, min_tbl.database_name)] = 0.0
-                    self.raw_tables[(min_tbl.server, min_tbl.database_name)] += (max_tbl.size+0.0-min_tbl.size+0.0)
-                    raw_array = [[k, v] for k,v in self.raw_tables.items()]
-                    raw_array = filter(lambda x: x[1] > gbytes*(1024**3), raw_array)
-                    raw_array.sort(key=lambda x: -x[1])
-                    if lim is not None:
-                        raw_array = raw_array[:lim]
-                    context['databases'] = raw_array
+                self.raw_tables[(min_tbl.server, min_tbl.database_name)] += (max_tbl.size+0.0-min_tbl.size+0.0)
+                raw_array = [[k, v] for k,v in self.raw_tables.items()]
+                raw_array = filter(lambda x: x[1] > gbytes*(1024**3), raw_array)
+                raw_array.sort(key=lambda x: -x[1])
+                if lim is not None:
+                    raw_array = raw_array[:lim]
+                context['databases'] = raw_array
         else:
             context['databases'] = []
         context['form'] = TopDatabasesForm()
@@ -262,12 +262,12 @@ class TopTablesView(TemplateView):
                         continue
                     if min_tbl.size != 0:
                         self.raw_tables[(min_tbl.server, min_tbl.database_name, min_tbl.table_name)] = (max_tbl.size+0.0-min_tbl.size+0.0)/min_tbl.size+0.0
-                    raw_array = [[k, v] for k,v in self.raw_tables.items()]
-                    raw_array = filter(lambda x: x[1] > percent, raw_array)
-                    raw_array.sort(key=lambda x: -x[1])
-                    if lim is not None:
-                        raw_array = raw_array[:lim]
-                    context['tables'] = raw_array
+                raw_array = [[k, v] for k,v in self.raw_tables.items()]
+                raw_array = filter(lambda x: x[1] > percent, raw_array)
+                raw_array.sort(key=lambda x: -x[1])
+                if lim is not None:
+                    raw_array = raw_array[:lim]
+                context['tables'] = raw_array
             if days == 0 and limit == 0 and percent == 0:
                 context['tables'] = []
         context['form'] = TopTablesForm()

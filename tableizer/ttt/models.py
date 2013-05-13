@@ -175,6 +175,14 @@ class TableView(TrackingTable):
     def created_at(self):
         return self.run_time
         
+    @property
+    def stat_created_at(self):
+        return self.created_at
+    
+    @property
+    def prev_stat_created_at(self):
+        return self.previous_version.created_at if self.previous_version is not None else ''
+        
 class TableUser(TrackingTable):
     permtype = models.IntegerField(null=True, blank=True, default=None)
     server = models.CharField(max_length=255, null=True, blank=True, default=None)

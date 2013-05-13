@@ -7,6 +7,7 @@
 2. Requirements installation
 3. Getting Started
 4. Usage
+5. API
 
 ## Overview
 - is a python port of the table-tracking-toolkit gem(https://github.com/palominodb/PalominoDB-Public-Code-Repository/tree/master/tools/table_tracking).
@@ -292,3 +293,6 @@ In the tableizer directory, you will find two settings file; settings.py and loc
     For more command options,
         
         ./manage.py tableizer-admin --help
+        
+## API
+API documentation available at docs/api.md
