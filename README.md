@@ -21,7 +21,7 @@ Tableizer has a pluggable system for implementing new metrics which could be use
 
 Tableizer also has a pluggable reporting/querying interface which out of the box support for generating reports suitable for:
 - text viewing ( in the moment troubleshooting, see when it went wrong )
-- email ( being kept apprise of developer madness )
+- email ( being kept apprised of developer madness )
 - nagios ( being alerted of developer madness )
 - rrdtool
 
