@@ -428,7 +428,7 @@ class CollectorRun(models.Model):
         
 class Server(models.Model):
     name = models.CharField(max_length=100, null=False)
-    cached_size = models.IntegerField(null=True, blank=True, default=None)
+    cached_size = models.BigIntegerField(null=True, blank=True, default=None)
     
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
@@ -445,7 +445,7 @@ class Server(models.Model):
 class ServerSchema(models.Model):
     name = models.CharField(max_length=64, null=False)
     server = models.ForeignKey(Server, null=True, blank=True, default=None)
-    cached_size = models.IntegerField(null=True, blank=True, default=None)
+    cached_size = models.BigIntegerField(null=True, blank=True, default=None)
     
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
@@ -462,7 +462,7 @@ class ServerSchema(models.Model):
 class DatabaseTable(models.Model):
     name = models.CharField(max_length=64, null=False)
     schema = models.ForeignKey(ServerSchema, null=True, blank=True, default=None)
-    cached_size = models.IntegerField(null=True, blank=True, default=None)
+    cached_size = models.BigIntegerField(null=True, blank=True, default=None)
     
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
