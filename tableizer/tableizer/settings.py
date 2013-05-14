@@ -259,6 +259,11 @@ LOGGING = {
             'propagate': False,
             'level': 'INFO',
         },
+        'management_command': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
     }
 }
 LOGGING['loggers'].update(SITE_LOGGERS)

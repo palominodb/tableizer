@@ -173,9 +173,11 @@ class Command(BaseCommand):
         try:
             ecode = action.execute()
         except Exception, e:
+            tb = traceback.format_exc()
             if settings.SEND_CRASHREPORTS:
-                tb = traceback.format_exc()
                 logger = logging.getLogger('tableizer')
-                logger.error(tb)
+            else:
+                logger = logging.getLogger('management_command')
+            logger.error(tb)
             sys.exit(1)
         sys.exit(ecode)
