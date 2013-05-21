@@ -32,7 +32,7 @@ def gen_diff(value):
         diff = difflib.unified_diff(prev_create_syntax, value.create_syntax.split('\n'))
         result = list(diff)
         result.pop(0)
-        result.pop(1)
+        result.pop(0)
         result.insert(0, '--- %s\t%s' % (str(value.table_name), str(value.prev_stat_created_at)))
         result.insert(1, '+++ %s\t%s' % (str(value.table_name), str(value.stat_created_at)))
         return '\n'.join(d.strip() for d in result)
