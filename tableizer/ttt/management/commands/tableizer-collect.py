@@ -94,9 +94,10 @@ class Command(BaseCommand):
                     for i in v:
                         if i.changed:
                             changed = True
-                        if changed:
-                            for i in v:
-                                i.save(txn_id)
+                            break
+                    if changed:
+                        for i in v:
+                            i.save(txn_id)
         except Exception, e:
             tb = traceback.format_exc()
             if settings.SEND_CRASHREPORTS:
