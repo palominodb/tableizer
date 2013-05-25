@@ -69,4 +69,4 @@ class EmailBackend(BaseEmailBackend):
             if not self.fail_silently:
                 raise
             return False
-        return Trued
+        return True
