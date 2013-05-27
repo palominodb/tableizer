@@ -24,7 +24,7 @@ from django.views.generic import RedirectView
 from ttt_gui import views
 
 urlpatterns = patterns('',
-         url(r'^$', RedirectView.as_view(url=reverse_lazy("server_list"),), name='index'),
+        url(r'^$', RedirectView.as_view(url=reverse_lazy("server_list"),), name='index'),
         
         url(r'^servers/$', views.ServerListView.as_view(), name='server_list'),
         url(r'^servers/(?P<id>\d+)/$', views.ServerDetailView.as_view(), name='server_detail'),
