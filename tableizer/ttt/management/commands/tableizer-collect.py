@@ -85,9 +85,9 @@ class Command(BaseCommand):
                             rd = director.collect(host, coller)
                             if rds.get(rd.stat) is None:
                                 rds[rd.stat] = []
-                                print "NEW TXN: %d" % (txn_id)
-                                print "rd changed: %s" % (rd.changed)
-                                rds[rd.stat].append(rd)
+                            print "NEW TXN: %d" % (txn_id)
+                            print "rd changed: %s" % (rd.changed)
+                            rds[rd.stat].append(rd)
                                 
                 for k,v in rds.items():
                     changed = False
