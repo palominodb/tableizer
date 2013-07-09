@@ -67,7 +67,7 @@ apt-get -y install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-
 # Download and Install Python
 cd ~
 wget http://python.org/ftp/python/2.7.3/Python-2.7.3.tgz
-tar -xvf Python-2.7.3.tg
+tar -xvf Python-2.7.3.tgz
 cd Python-2.7.3
 ./configure --prefix=/usr/local
 make && make altinstall
