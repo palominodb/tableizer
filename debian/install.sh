@@ -49,19 +49,20 @@ then
 fi
 
 # Install and Start MySQL Server
-apt-get install mysql-server mysql-client -y
+export DEBIAN_FRONTEND=noninteractive
+apt-get -q -y install mysql-server mysql-client 
 service mysql start
 
 # Set MySQL root password
 mysqladmin -u root password "$PASSWD"
 
 # Install libmysqlclient-dev
-apt-get install libmysqlclient-dev
+apt-get -y install libmysqlclient-dev
 
 # Install Development Tools
-apt-get install build-essential -y
-apt-get install libreadline5-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev -y
-apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev -y
+apt-get -y install build-essential 
+apt-get -y install libreadline5-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev 
+apt-get -y install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev 
 
 # Download and Install Python
 cd ~
@@ -107,7 +108,7 @@ source ~/.bashrc
 mkvirtualenv --no-site-packages --distribute -p /usr/local/bin/python2.7 $VENV_NAME
 
 # Install python-imaging
-apt-get build-dep python-imaging -y
+apt-get -y build-dep python-imaging 
 
 # Fix Symlinks
 if [ ! -f /usr/lib/libfreetype.so ];
@@ -127,7 +128,7 @@ then
 fi
 
 # Install Rrdtool
-apt-get install librrds-perl rrdtool -y
+apt-get -y install librrds-perl rrdtool 
 
 # Install Rrdtool-python requirements
-apt-get install libcairo2-dev libpango1.0-dev libglib2.0-dev libxml2-dev librrd-dev -y
+apt-get -y install libcairo2-dev libpango1.0-dev libglib2.0-dev libxml2-dev librrd-dev 
