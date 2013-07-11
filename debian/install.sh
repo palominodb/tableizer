@@ -74,7 +74,7 @@ make && make altinstall
 
 # Install Setuptools and Pip
 cd ~
-wget http://pypi.python.org/packages/source/d/distribute/ditstribute-0.6.36.tar.gz
+wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.36.tar.gz
 tar xf distribute-0.6.36.tar.gz
 cd distribute-0.6.36
 python2.7 setup.py install

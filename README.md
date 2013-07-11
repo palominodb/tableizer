@@ -42,7 +42,7 @@ CentOS
 - follow the steps at centos/installation.md or execute centos/install.sh
 
 Amazon Linux
-- follow the steps at amazon_linux/installtion.md or execute amazon_linux/install.sh
+- follow the steps at amazon_linux/installation.md or execute amazon_linux/install.sh
 
 ### install.sh
     usage: ./install.sh options
