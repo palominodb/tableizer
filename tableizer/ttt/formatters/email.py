@@ -140,7 +140,8 @@ class EmailFormatter(Formatter):
         to_email = formatter_options.get('email', {}).get('emailto', '')
         tstream_val = tstream.getvalue()
         body = '%s changes:\n%s' % (rows[0].__class__.collector, tstream_val)
-        email = mail.EmailMessage(subj_prefix, body, 'ttt@localhost',
+        subj = '%s %s changes' % (subj_prefix, rows[0].__class__.collector)
+        email = mail.EmailMessage(subj, body, 'ttt@localhost',
                                     [to_email], connection=connection)
         email.send()
         
