@@ -95,7 +95,7 @@ then
     echo "export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7" >> ~/.bashrc
 fi
 
-if ! grep - F "source /usr/local/bin/virtualenvwrapper.sh" ~/.bashrc
+if ! grep -F "source /usr/local/bin/virtualenvwrapper.sh" ~/.bashrc
 then
     echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
 fi

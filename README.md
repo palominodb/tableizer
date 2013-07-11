@@ -89,7 +89,7 @@ Amazon Linux
 
         ./manage.py runserver
         
-    *Note: You can also host Tableizer using webservers like Apache and Nginx.*
+    *Note: You can also host Tableizer using webservers like Apache and Nginx.  Documentation on this is found here: https://docs.djangoproject.com/en/1.5/howto/deployment/wsgi/modwsgi/ *
     
 ### Settings
 In the tableizer directory, you will find two settings file; settings.py and local_settings.py. This is good if you want to install tableizer in different hosts. The settings.py file will contain the settings similar settings across all installations and default values. On the other hand, the local_settings.py file allows you to override defaults and global settings.
