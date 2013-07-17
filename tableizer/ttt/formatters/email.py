@@ -36,7 +36,7 @@ class EmailFormatter(Formatter):
                 link_url = link_url[:-1]
         last_run = None
         for r in rows:
-            tbl = DatabaseTable.objects.get(name=r.table_name, schema__name=r.database_name, schema__server__name=r.server)
+            tbl = DatabaseTable.objects.filter(name=r.table_name, schema__name=r.database_name, schema__server__name=r.server).order_by('-created_at')[0]
             relative_url = reverse('table_detail', kwargs={'id':tbl.id})
             if last_run != r.run_time:
                 stream.write('--- %s\n' % (str(r.run_time)))
@@ -90,7 +90,7 @@ class EmailFormatter(Formatter):
             
         changes=0
         for row in rows:
-            if row.__class__.objects.tchanged(row):
+            if row.__class__.objects.status(row) in ('new', 'deleted', 'changed'):
                 changes += 1
                 
         if 'send_empty' in formatter_options.get('email', {}).keys():
@@ -138,10 +138,11 @@ class EmailFormatter(Formatter):
         
         connection.open()
         to_email = formatter_options.get('email', {}).get('emailto', '')
+        from_email = '%s <%s>' % (settings.FROM_EMAIL_NAME, formatter_options.get('email', {}).get('smtp_settings', {}).get('user', ''))
         tstream_val = tstream.getvalue()
         body = '%s changes:\n%s' % (rows[0].__class__.collector, tstream_val)
         subj = '%s %s changes' % (subj_prefix, rows[0].__class__.collector)
-        email = mail.EmailMessage(subj, body, 'ttt@localhost',
+        email = mail.EmailMessage(subj, body, from_email,
                                     [to_email], connection=connection)
         email.send()
         

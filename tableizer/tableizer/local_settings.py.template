@@ -191,3 +191,5 @@ FORMATTER_OPTIONS = {
         },
     }
 }
+
+FROM_EMAIL_NAME = 'Tableizer'
