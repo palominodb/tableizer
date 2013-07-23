@@ -21,7 +21,7 @@ You may need to install Python2.7 if you're CentOS ships a different version.
 
 #### Development Tools
 
-    yum groupinstall “Development tools”
+    yum groupinstall 'Development Tools'
     yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel
     
 #### Download and install Python
@@ -54,7 +54,6 @@ You may need to install Python2.7 if you're CentOS ships a different version.
     export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
     source /usr/local/bin/virtualenvwrapper.sh
 
-
 #### Reload bash
 
     source ~/.bashrc
@@ -63,23 +62,45 @@ You may need to install Python2.7 if you're CentOS ships a different version.
 
     mkvirtualenv --no-site-packages --distribute -p /usr/local/bin/python2.7 mysql_tools
 
-## Install Python-imaging
+## Install Python-imaging and Python-devel
 
-    yum install python-imaging
+    yum install python-imaging python-devel libjpeg-devel
 
 ## Install Rrdtool
 
-For CentOS 5,
+For CentOS 5, 32-bit,
 
-    rpm -ivh http://apt.sq.be/redhat/el5/en/i386/rpmforge/RPMS/rpmforge-release-0.5.2-2.el5.rf.i386
-    yum install rrdtool -y
+    yum install perl perl-Time-HiRes ruby ruby-devel lua lua-devel xorg-x11-fonts-Type1 libdbi groff
+    wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el5.rf.i386.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el5.rf.i386.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el5.rf.i386.rpm
+    rpm -ivh perl-rrdtool-1.4.7-1.el5.rf.i386.rpm rrdtool-1.4.7-1.el5.rf.i386.rpm rrdtool-devel-1.4.7-1.el5.rf.i386.rpm
     
-For CentOS 6,
+For CentOS 5, 64-bit,
 
-    rpm -ivh http://apt.sw.be/redhat/el6/en/i386/rpmforge/RPMS/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
-    yum install rrdtool -y
+    yum install perl perl-Time-HiRes ruby ruby-devel lua lua-devel xorg-x11-fonts-Type1 libdbi groff
+    wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el5.rf.x86_64.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el5.rf.x86_64.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el5.rf.x86_64.rpm
+    rpm -ivh perl-rrdtool-1.4.7-1.el5.rf.x86_64.rpm rrdtool-1.4.7-1.el5.rf.x86_64.rpm rrdtool-devel-1.4.7-1.el5.rf.x86_64.rpm
+    
+For CentOS 6, 32-bit,
+
+    yum install perl perl-Time-HiRes ruby xorg-x11-fonts-Type1 libdbi
+    wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el6.rfx.i686.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el6.rfx.i686.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el6.rfx.i686.rpm
+    rpm -ivh perl-rrdtool-1.4.7-1.el6.rfx.i686.rpm rrdtool-1.4.7-1.el6.rfx.i686.rpm rrdtool-devel-1.4.7-1.el6.rfx.i686.rpm
+    
+For CentOS 6, 64-bit,
+    
+    yum install perl perl-Time-HiRes ruby xorg-x11-fonts-Type1 libdbi
+    wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el6.rfx.x86_64.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el6.rfx.x86_64.rpm
+    wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el6.rfx.x86_64.rpm
+    rpm -ivh perl-rrdtool-1.4.7-1.el6.rfx.x86_64.rpm rrdtool-1.4.7-1.el6.rfx.x86_64.rpm rrdtool-devel-1.4.7-1.el6.rfx.x86_64.rpm
 
 #### Rrdtool-python requirements
 
-    yum install cairo-devel libxml2-devel pango-devel libpng-devel freetype-devel libart_lgpl-devel
+    yum install cairo-devel libxml2-devel pango pango-devel libpng-devel freetype freetype-devel libart_lgpl-devel
 

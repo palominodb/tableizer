@@ -59,7 +59,7 @@ mysqladmin -u root password "$PASSWD"
 yum install mysql-devel
 
 # Install Development Tools
-yum groupinstall “Development tools”
+yum groupinstall 'Development Tools'
 yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel
 
 # Download and Install Python
@@ -72,7 +72,7 @@ make && make altinstall
 
 # Install Setuptools and Pip
 cd ~
-wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.36.tar.gz
+wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.36.tar.gz --no-check-certificate
 tar xf distribute-0.6.36.tar.gz
 cd distribute-0.6.36
 python2.7 setup.py install
@@ -105,25 +105,58 @@ source ~/.bashrc
 # Create virtualenv
 mkvirtualenv --no-site-packages --distribute -p /usr/local/bin/python2.7 $VENV_NAME
 
-# Install python-imaging
-yum install python-imaging
+# Install python-imaging and python-devel
+yum install python-imaging python-devel libjpeg-devel
 
 # Install Rrdtool
 CENTOS_VERSION=$(rpm -qa \*-release | grep -Ei "oracle|redhat|centos" | cut -d"-" -f3)
+UNAME=$(uname -m)
 
 if [ $CENTOS_VERSION -eq 5 ]
 then
-    rpm -ivh http://apt.sq.be/redhat/el5/en/i386/rpmforge/RPMS/rpmforge-release-0.5.2-2.el5.rf.i386
-    yum install rrdtool -y
+    if [ $UNAME -eq "i386" ]
+    then
+        yum install perl perl-Time-HiRes ruby ruby-devel lua lua-devel xorg-x11-fonts-Type1 libdbi groff
+        wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el5.rf.i386.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el5.rf.i386.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el5.rf.i386.rpm
+        rpm -ivh perl-rrdtool-1.4.7-1.el5.rf.i386.rpm rrdtool-1.4.7-1.el5.rf.i386.rpm rrdtool-devel-1.4.7-1.el5.rf.i386.rpm
+    elif [ $UNAME -equ "x86_64" ]
+    then
+        yum install perl perl-Time-HiRes ruby ruby-devel lua lua-devel xorg-x11-fonts-Type1 libdbi groff
+        wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el5.rf.x86_64.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el5.rf.x86_64.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el5.rf.x86_64.rpm
+        rpm -ivh perl-rrdtool-1.4.7-1.el5.rf.x86_64.rpm rrdtool-1.4.7-1.el5.rf.x86_64.rpm rrdtool-devel-1.4.7-1.el5.rf.x86_64.rpm
+    else
+        echo "Architecture not supported"
+        exit 1
+    fi
 elif [ $CENTOS_VERSION -eq 6 ]
 then
-    rpm -ivh http://apt.sw.be/redhat/el6/en/i386/rpmforge/RPMS/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
-    yum install rrdtool -y
+    if [ $UNAME -eq "i686" ]
+    then
+        yum install perl perl-Time-HiRes ruby xorg-x11-fonts-Type1 libdbi
+        wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el6.rfx.i686.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el6.rfx.i686.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el6.rfx.i686.rpm
+        rpm -ivh perl-rrdtool-1.4.7-1.el6.rfx.i686.rpm rrdtool-1.4.7-1.el6.rfx.i686.rpm rrdtool-devel-1.4.7-1.el6.rfx.i686.rpm
+    elif [ $UNAME -equ "x86_64" ]
+    then
+        yum install perl perl-Time-HiRes ruby xorg-x11-fonts-Type1 libdbi
+        wget http://pkgs.repoforge.org/rrdtool/perl-rrdtool-1.4.7-1.el6.rfx.x86_64.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el6.rfx.x86_64.rpm
+        wget http://pkgs.repoforge.org/rrdtool/rrdtool-devel-1.4.7-1.el6.rfx.x86_64.rpm
+        rpm -ivh perl-rrdtool-1.4.7-1.el6.rfx.x86_64.rpm rrdtool-1.4.7-1.el6.rfx.x86_64.rpm rrdtool-devel-1.4.7-1.el6.rfx.x86_64.rpm
+    else
+        echo "Architecture not supported"
+        exit 1
+    fi
 else
     echo "CentOS Version not supported"
     exit 1
 fi
 
 # Install Rrdtool-python requirements
-yum install cairo-devel libxml2-devel pango-devel libpng-devel freetype-devel libart_lgpl-devel
+yum install cairo-devel libxml2-devel pango pango-devel libpng-devel freetype freetype-devel libart_lgpl-devel
 
