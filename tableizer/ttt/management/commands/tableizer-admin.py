@@ -43,41 +43,68 @@ class BaseAction:
 class PurgeAction(BaseAction):
 
     def execute(self):
-        if len(self.args) < 1:
-            print "Need at least one host to purge (try --help)."
+        args = self.args
+        if len(args) < 2:
+            print "Need a purge action(host/days). If purge action is host, pass hostnames to purge. If purge action is days, pass number of days to purge data older than the parameter."
+            return 1
+        action = args.pop(0)
+        if action not in ('host', 'days'):
+            print "Invalid purge action. Choose between 'host' and 'days'"
             return 1
             
-        if self.debug:
-            print "Performing purge of %s" % (','.join(self.args))
-            
-        with transaction.commit_on_success():
-            for host in self.args:
-                if self.debug:
-                    print "Doing purge for %s" % (host)
+        if action == 'host':
+            if self.debug:
+                print "Performing purge of %s" % (','.join(args))
+                
+            with transaction.commit_on_success():
+                for host in args:
+                    if self.debug:
+                        print "Doing purge for %s" % (host)
+                        
+                    ### Clean out the references in the server tables
+                    s = Server.objects.find_by_name(host)
+                    schs = s.serverschema_set.all()
+                    tbls = DatabaseTable.objects.filter(schema__id__in=[x.id for x in schs])
+                    n = tbls.count()
+                    tbls.delete()
+                    if self.debug:
+                        print "Deleted %d tables from the cache.." % (n)
+                    n = schs.count()
+                    schs.delete()
+                    if self.debug:
+                        print "Deleted %d schemas from the cache.." % (n)
+                    s.delete()
                     
-                ### Clean out the references in the server tables
-                s = Server.objects.find_by_name(host)
-                schs = s.serverschema_set.all()
-                tbls = DatabaseTable.objects.filter(schema__id__in=[x.id for x in schs])
-                n = tbls.count()
-                tbls.delete()
-                if self.debug:
-                    print "Deleted %d tables from the cache.." % (n)
-                n = schs.count()
-                schs.delete()
-                if self.debug:
-                    print "Deleted %d schemas from the cache.." % (n)
-                s.delete()
+                    for col in CollectorRegistry.all():
+                        items = col.stat.objects.filter(server=host)
+                        n = items.count()
+                        items.delete()
+                        if self.debug:
+                            print "Deleted %d records from %s table.." % (n, col.id)
+                        cr_id = CollectorRun.objects.get_or_create(collector=col.id)[0].id
+                        stat_ids = col.stat.objects.all().values_list('id', flat=True)
+                        items = Snapshot.objects.filter(collector_run_id=cr_id).exclude(statistic_id__in=stat_ids)
+                        n = items.count()
+                        items.delete()
+                        if self.debug:
+                            print "Deleted %d %s records from the snapshots table.." % (n, col.id)
+        elif action == 'days':
+            days = int(args.pop())
+            if self.debug:
+                print "Performing purge of data older than %d day/s." % days
+                
+            with transaction.commit_on_success():
+                dt = datetime.now() - timedelta(days=days)
                 
                 for col in CollectorRegistry.all():
-                    items = col.stat.objects.filter(server=host)
+                    items = col.stat.objects.filter(run_time__lte=dt)
                     n = items.count()
                     items.delete()
                     if self.debug:
                         print "Deleted %d records from %s table.." % (n, col.id)
                     cr_id = CollectorRun.objects.get_or_create(collector=col.id)[0].id
                     stat_ids = col.stat.objects.all().values_list('id', flat=True)
-                    items = Snapshot.objects.filter(collector_run_id=cr_id).exclude(statistic_id__in=col.stat.objects.all().values_list('id', flat=True))
+                    items = Snapshot.objects.filter(collector_run_id=cr_id).exclude(statistic_id__in=stat_ids)
                     n = items.count()
                     items.delete()
                     if self.debug:
