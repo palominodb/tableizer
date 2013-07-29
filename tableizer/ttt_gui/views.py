@@ -168,6 +168,8 @@ class TopDatabasesView(TemplateView):
                 dt = datetime.now() - timedelta(days=days)
             if not math.isnan(percent):
                 context['type'] = 'top_Pct'
+                context['percent'] = percent
+                context['days'] = days
                 min_maxes = TableVolume.objects.exclude(database_name=None, 
                     table_name=None).filter(run_time__gt=dt).values('server',
                     'database_name', 'table_name').annotate(min_id=Min('id'), max_id=Max('id'))
@@ -188,6 +190,8 @@ class TopDatabasesView(TemplateView):
                 context['databases'] = raw_array
             elif not math.isnan(gbytes):
                 context['type'] = 'top_GB'
+                context['gbytes'] = gbytes
+                context['days'] = days
                 min_maxes = TableVolume.objects.exclude(database_name=None, 
                     table_name=None).filter(run_time__gt=dt).values('server',
                     'database_name', 'table_name').annotate(min_id=Min('id'), max_id=Max('id'))
@@ -198,7 +202,7 @@ class TopDatabasesView(TemplateView):
                         continue
                     if [min_tbl.server, min_tbl.database_name] not in self.raw_tables.keys():
                         self.raw_tables[(min_tbl.server, min_tbl.database_name)] = 0.0
-                self.raw_tables[(min_tbl.server, min_tbl.database_name)] += (max_tbl.size+0.0-min_tbl.size+0.0)
+                    self.raw_tables[(min_tbl.server, min_tbl.database_name)] += (max_tbl.size+0.0-min_tbl.size+0.0)
                 raw_array = [[k, v] for k,v in self.raw_tables.items()]
                 raw_array = filter(lambda x: x[1] > gbytes*(1024**3), raw_array)
                 raw_array.sort(key=lambda x: -x[1])
@@ -247,6 +251,8 @@ class TopTablesView(TemplateView):
                 tables = tables[:lim]
             context['tables'] = tables
         else:
+            context["days"] = days
+            context["percent"] = percent
             if days != 0 and not math.isnan(percent):
                 context['type'] = 'top_Pct'
                 self.raw_tables = {}

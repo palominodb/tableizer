@@ -6,6 +6,7 @@
 
 {% block hero %}
     <h1>Top Tables {% if server %}<em>{{ server.name }}.{{ database.name }}</em>{% endif %}</h1>
+    {% ifequal type 'top_N' %}<h3>Top {{ tables.count }} {% ifequal tables.count 1 %}Table{% else %}Tables{% endifequal %} as of last volumetric collection.</h3>{% else %}<h3>Top {{ tables|length }} {% ifequal tables|length 1 %}Table{% else %}Tables{% endifequal %} by {{ percent|floatformat:"-5" }}% growth over {{ days }} {% ifequal days 1 %}day{% else %}days{% endifequal %}.</h3>{% endifequal %}
 {% endblock hero %}
 
 {% block body %}

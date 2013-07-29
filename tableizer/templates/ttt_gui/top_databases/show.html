@@ -6,6 +6,11 @@
 
 {% block hero %}
     <h1>Top Databases</h1>
+    {% ifequal type 'top_Pct' %}
+    <h3>Top {{ databases|length }} {% ifequal databases|length 1 %}Database{% else %}Databases{% endifequal %} by {{ percent|floatformat:"-5" }}% growth over {{ days }} {% ifequal days 1 %}day{% else %}days{% endifequal %}.</h3>
+    {% else %}{% ifequal type 'top_GB' %}
+    <h3>Top {{ databases|length }} {% ifequal databases|length 1 %}Database{% else %}Databases{% endifequal %} by {{ gbytes|floatformat:"-5" }}Gb growth over {{ days }} {% ifequal days 1 %}day{% else %}days{% endifequal %}.
+    {% endifequal %}{% endifequal %}
 {% endblock hero %}
 
 {% block body %}
