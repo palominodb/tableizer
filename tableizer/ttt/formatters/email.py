@@ -36,8 +36,11 @@ class EmailFormatter(Formatter):
                 link_url = link_url[:-1]
         last_run = None
         for r in rows:
-            tbl = DatabaseTable.objects.filter(name=r.table_name, schema__name=r.database_name, schema__server__name=r.server).order_by('-created_at')[0]
-            relative_url = reverse('table_detail', kwargs={'id':tbl.id})
+            try:
+                tbl = DatabaseTable.objects.filter(name=r.table_name, schema__name=r.database_name, schema__server__name=r.server).order_by('-created_at')[0]
+                relative_url = reverse('table_detail', kwargs={'id':tbl.id})
+            except IndexError:
+                relative_url = ''
             if last_run != r.run_time:
                 stream.write('--- %s\n' % (str(r.run_time)))
                 last_run = r.run_time
@@ -53,6 +56,12 @@ class EmailFormatter(Formatter):
                 ))
             else:
                 stream.write('{0}\t{1}.{2}.{3}\n'.format(r.status, r.server, r.database_name, r.table_name))
+            stream.write('{0}\n{1}\n{2}\n{3}\n'.format(
+                'OLD:',
+                r.previous_version.create_syntax if r.previous_version is not None else '',
+                'NEW:',
+                r.create_syntax
+            ))
     
     def format_user(self, stream, rows, *args):
         last_run = None
