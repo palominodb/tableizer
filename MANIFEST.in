@@ -1,0 +1,4 @@
+include COPYING
+include README.txt
+include docs/*
+recursive-include tableizer *.py *.css *.js *.png
